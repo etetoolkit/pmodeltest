@@ -28,9 +28,9 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
     and only run the wanted ones.
     '''
     if speed:
-        opt = 'lr'
+        opt = 'l'
     else:
-        opt = 'tlr'
+        opt = 'tl'
     results = {}
     typ = 'aa' if protein else 'nt'
     for model in models [typ]:
@@ -54,18 +54,17 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                                     + invts[inv] + gamma[gam]
                     log = '\nModel ' + \
                           model_name + inv + gam + freq + '\n'
-                    log += 'Command line = '
+                    log += '  Command line = '
                     log += ' '.join (command_list+ ['-b','0']) + '\n'
                     (out, err) = Popen(command_list + ['-b','0'],
                                        stdout=PIPE).communicate()
                     (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
                     # num of param = X (nb of branches) + 1(topology) + Y(model)
-                    numparam = model_param + int (opt=='tlr') + \
+                    numparam = model_param + int (opt=='tl') + \
                                (inv != '') + (gam != '') + numspe*2-3
                     aic = 2*numparam-2*lnl
-                    log += 'K = '+str (numparam)+', lnL = '+str(lnl) + \
-                           '\nAIC = ' + str (aic) + '\n'
-                    log += '-----------------------------------\n'
+                    log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
+                           ', AIC = ' + str (aic)
                     if err is not None:
                         exit ('problem running phyml: '+out)
                     results[model_name + inv + gam + freq] =  {
@@ -75,7 +74,7 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                         'dic' : dic,
                         'cmnd': command_list}
                     if verb:
-                        print log
+                        print >> STDERR, log
     return results
 
 
@@ -149,19 +148,25 @@ def main():
                 break
         wanted_models = ','.join(wanted_models)
         print >> STDERR,  '\nREFINING...\n    doing the same but computing topologies' + \
-              ' only for models that sums a weight of 0.95\n' + \
+              ' only for models that sums a weight of 0.95\n\n    ' + \
               wanted_models + '\n'
         results = run_phyml(opts.algt, wanted_models, \
                             False, opts.verb, opts.protein,
                             sequential=opts.sequential, rerun=True)
         results, ord_aic = aic_calc(results, False)
     print >> STDERR,  '\n\n*************************************************'
+    results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
+    print >> STDERR,\
+          'Re-run of best model with computation of rates and and support...'
+    print >> STDERR, '  Command line = ' + \
+          ' '.join (results[ord_aic[0]]['cmnd'] + ['-b', '-4']) + \
+          '\n'
     (out, err) = Popen(results[ord_aic[0]]['cmnd'] + ['-b', '-4'],
                        stdout=PIPE).communicate()
     tree = get_tree   (opts.algt + '_phyml_tree.txt') 
     print >> STDERR, \
-          '  Tree corresponding to best model (with SH-like branch supports alone), '\
-          + ord_aic[0] + '\n'
+          '\nTree corresponding to best model, '\
+          + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDERR,  tree
     open (opts.outfile, 'w').write (tree)
 
