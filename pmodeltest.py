@@ -10,7 +10,7 @@ Return 'best' tree with SH branch support value.
 __author__  = "francois serra"
 __email__   = "francois@barrabin.org"
 __licence__ = "GPLv3"
-__version__ = "1.02b"
+__version__ = "1.02c"
 __title__   = "pmodeltest v%s" % __version__
 
 
