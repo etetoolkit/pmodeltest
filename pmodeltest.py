@@ -21,18 +21,16 @@ from sys import stderr as STDERR
 from numpy import exp
 
 def run_phyml(algt, wanted_models, speed, verb, protein,
-              sequential=True, rerun=False):
+              support, sequential=True, rerun=False):
     '''
     runs a list of models and returns a dictionnary of results.
     If rerun is True, will have into account +I+G information
     and only run the wanted ones.
     '''
-    if speed:
-        opt = 'l'
-    else:
-        opt = 'tl'
-    results = {}
+    opt = 'l'  if speed   else 'tl'
+    sup = '-4' if support else '0'
     typ = 'aa' if protein else 'nt'
+    results = {}
     for model in models [typ]:
         for freq in freqs[typ].keys():
             if not rerun and modelnames[typ][model[1]+freq][0] not in \
@@ -50,14 +48,13 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                                     '-i', algt,'-d',
                                     'aa' if protein else 'nt',
                                     '-n', '1',
+                                    '-b', sup,
                                     '-o', opt] +  model + freqs[typ][freq] \
                                     + invts[inv] + gamma[gam]
-                    log = '\nModel ' + \
-                          model_name + inv + gam + freq + '\n'
+                    log =  '\nModel ' + model_name + inv + gam + freq + '\n'
                     log += '  Command line = '
-                    log += ' '.join (command_list+ ['-b','0']) + '\n'
-                    (out, err) = Popen(command_list + ['-b','0'],
-                                       stdout=PIPE).communicate()
+                    log += ' '.join (command_list) + '\n'
+                    (out, err) = Popen(command_list, stdout=PIPE).communicate()
                     (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
                     # num of param = X (nb of branches) + 1(topology) + Y(model)
                     numparam = model_param + int (opt=='tl') + \
@@ -72,6 +69,7 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                         'lnL' : lnl,
                         'K'   : numparam,
                         'dic' : dic,
+                        'tree': get_tree (algt + '_phyml_tree.txt'),
                         'cmnd': command_list}
                     if verb:
                         print >> STDERR, log
@@ -135,7 +133,7 @@ def main():
         del (freqs ['aa']['+F'])
     # first run of models
     results = run_phyml(opts.algt, opts.models, opts.speedy, opts.verb,
-                        opts.protein, sequential=opts.sequential)
+                        opts.protein, opts.support, sequential=opts.sequential)
     results, ord_aic = aic_calc(results, opts.speedy)
     # if bit fast, second run with wanted models (that sums weight of 0.95)
     if opts.medium:
@@ -151,25 +149,32 @@ def main():
               ' only for models that sums a weight of 0.95\n\n    ' + \
               wanted_models + '\n'
         results = run_phyml(opts.algt, wanted_models, \
-                            False, opts.verb, opts.protein,
+                            False, opts.verb, opts.protein, opts.support,
                             sequential=opts.sequential, rerun=True)
         results, ord_aic = aic_calc(results, False)
     print >> STDERR,  '\n\n*************************************************'
     results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
     print >> STDERR,\
           'Re-run of best model with computation of rates and and support...'
-    print >> STDERR, '  Command line = ' + \
-          ' '.join (results[ord_aic[0]]['cmnd'] + ['-b', '-4']) + \
-          '\n'
-    (out, err) = Popen(results[ord_aic[0]]['cmnd'] + ['-b', '-4'],
-                       stdout=PIPE).communicate()
-    tree = get_tree   (opts.algt + '_phyml_tree.txt') 
-    print >> STDERR, \
-          '\nTree corresponding to best model, '\
+    cmd = results[ord_aic[0]]['cmnd']
+    cmd [cmd.index ('-b')+1] = '-4'
+    print >> STDERR, '  Command line = ' + ' '.join (cmd) + '\n'
+    (out, err) = Popen(cmd, stdout=PIPE).communicate()
+    tree = get_tree   (opts.algt + '_phyml_tree.txt')
+    print >> STDERR, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDERR,  tree
-    open (opts.outfile, 'w').write (tree)
+    if opts.outfile:
+        open (opts.outfile, 'w').write (tree)
+    if opts.outtrees:
+        out = open (opts.outtrees, 'w')
+        for run in results:
+            out.write ('command: ' + \
+                       ' '.join (results [run]['cmnd']) + \
+                       '\ntree (nw):    ' +results [run]['tree'] + '\n')
+        out.close ()
 
+    print "Done."
 
 def parse_stats(path):
     '''
@@ -239,9 +244,14 @@ Reads sequeneces from file fasta format, and align acording to translation.
                            'RtREV', 'CpREV', 'VT', 'Blosum62', 'MtMam',
                            'MtArt', 'HIVw', 'HIVb'] }
     parser.add_option('-i', dest='algt', metavar="PATH", \
-                      help='path to input file in fasta format')
+                      help='path to input file in phylip format')
     parser.add_option('-o', dest='outfile', metavar="PATH", \
-                      help='path to output tree in newick format')
+                      help='name of outfile tree (newick format)')
+    parser.add_option('-O', dest='outtrees', metavar="PATH", \
+                      help='name of outfile with all trees (newick format)')
+    parser.add_option('--support', action='store_true', \
+                      dest='support', default=False, \
+                      help='[%default] compute SH-like branch support for each model (slower).')
     parser.add_option('--fast', action='store_true', \
                       dest='speedy', default=False, \
                       help='[%default] Do not do topology optimization.')
@@ -340,42 +350,43 @@ invts = {'': [], '+I': ['-v', 'e'  ]}
 
 gamma = {'': ['-c', '1', '-a', '1.0'], '+G': ['-c', '4', '-a', 'e']}
 
-modelnames = { 'nt': { '000000' + ''  : ['JC'     , 0],
-                       '010010' + ''  : ['K80'    , 1],
-                       '010020' + ''  : ['TrNef'  , 2],
-                       '012210' + ''  : ['TPM1'   , 2],
-                       '010212' + ''  : ['TPM2'   , 2],
-                       '012012' + ''  : ['TPM3'   , 2],
-                       '012230' + ''  : ['TIM1ef' , 3],
-                       '010232' + ''  : ['TIM2ef' , 3],
-                       '012032' + ''  : ['TIM3ef' , 3],
-                       '012314' + ''  : ['TVMef'  , 4],
-                       '012345' + ''  : ['SYM'    , 5],
-                       '000000' + '+F': ['F81'    , 3],
-                       '010010' + '+F': ['HKY'    , 4],
-                       '010020' + '+F': ['TrN'    , 5],
-                       '012210' + '+F': ['TPM1uf' , 5],
-                       '010212' + '+F': ['TPM2uf' , 5],
-                       '012012' + '+F': ['TPM3uf' , 5],
-                       '012230' + '+F': ['TIM1'   , 6],
-                       '010232' + '+F': ['TIM2'   , 6],
-                       '012032' + '+F': ['TIM3'   , 6],
-                       '012314' + '+F': ['TVM'    , 7],
-                       '012345' + '+F': ['GTR'    , 8]},
-               'aa': { 'LG'       + '': ['LG'      , 0],
-                       'WAG'      + '': ['WAG'     , 0],
-                       'JTT'      + '': ['JTT'     , 0],
-                       'MtREV'    + '': ['MtREV'   , 0],
-                       'Dayhoff'  + '': ['Dayhoff' , 0],
-                       'DCMut'    + '': ['DCMut'   , 0],
-                       'RtREV'    + '': ['RtREV'   , 0],
-                       'CpREV'    + '': ['CpREV'   , 0],
-                       'VT'       + '': ['VT'      , 0],
-                       'Blosum62' + '': ['Blosum62', 0],
-                       'MtMam'    + '': ['MtMam'   , 0],
-                       'MtArt'    + '': ['MtArt'   , 0],
-                       'HIVw'     + '': ['HIVw'    , 0],
-                       'HIVb'     + '': ['HIVb'    , 0],
+# phyml model names, real names, and number of extra parameters
+modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
+                       '010010' + ''    : ['K80'     , 1 ],
+                       '010020' + ''    : ['TrNef'   , 2 ],
+                       '012210' + ''    : ['TPM1'    , 2 ],
+                       '010212' + ''    : ['TPM2'    , 2 ],
+                       '012012' + ''    : ['TPM3'    , 2 ],
+                       '012230' + ''    : ['TIM1ef'  , 3 ],
+                       '010232' + ''    : ['TIM2ef'  , 3 ],
+                       '012032' + ''    : ['TIM3ef'  , 3 ],
+                       '012314' + ''    : ['TVMef'   , 4 ],
+                       '012345' + ''    : ['SYM'     , 5 ],
+                       '000000' + '+F'  : ['F81'     , 3 ],
+                       '010010' + '+F'  : ['HKY'     , 4 ],
+                       '010020' + '+F'  : ['TrN'     , 5 ],
+                       '012210' + '+F'  : ['TPM1uf'  , 5 ],
+                       '010212' + '+F'  : ['TPM2uf'  , 5 ],
+                       '012012' + '+F'  : ['TPM3uf'  , 5 ],
+                       '012230' + '+F'  : ['TIM1'    , 6 ],
+                       '010232' + '+F'  : ['TIM2'    , 6 ],
+                       '012032' + '+F'  : ['TIM3'    , 6 ],
+                       '012314' + '+F'  : ['TVM'     , 7 ],
+                       '012345' + '+F'  : ['GTR'     , 8 ]},
+               'aa': { 'LG'       + ''  : ['LG'      , 0 ],
+                       'WAG'      + ''  : ['WAG'     , 0 ],
+                       'JTT'      + ''  : ['JTT'     , 0 ],
+                       'MtREV'    + ''  : ['MtREV'   , 0 ],
+                       'Dayhoff'  + ''  : ['Dayhoff' , 0 ],
+                       'DCMut'    + ''  : ['DCMut'   , 0 ],
+                       'RtREV'    + ''  : ['RtREV'   , 0 ],
+                       'CpREV'    + ''  : ['CpREV'   , 0 ],
+                       'VT'       + ''  : ['VT'      , 0 ],
+                       'Blosum62' + ''  : ['Blosum62', 0 ],
+                       'MtMam'    + ''  : ['MtMam'   , 0 ],
+                       'MtArt'    + ''  : ['MtArt'   , 0 ],
+                       'HIVw'     + ''  : ['HIVw'    , 0 ],
+                       'HIVb'     + ''  : ['HIVb'    , 0 ],
                        'LG'       + '+F': ['LG'      , 19],
                        'WAG'      + '+F': ['WAG'     , 19],
                        'JTT'      + '+F': ['JTT'     , 19],
