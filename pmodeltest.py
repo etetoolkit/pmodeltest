@@ -18,6 +18,7 @@ from optparse import OptionParser
 from subprocess import Popen, PIPE
 from re import sub
 from sys import stderr as STDERR
+from sys import stdout as STDOUT
 from numpy import exp
 
 def run_phyml(algt, wanted_models, speed, verb, protein,
@@ -72,7 +73,7 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                         'tree': get_tree (algt + '_phyml_tree.txt'),
                         'cmnd': command_list}
                     if verb:
-                        print >> STDERR, log
+                        print >> STDOUT, log
     return results
 
 
@@ -95,16 +96,16 @@ def aic_calc(results, speed):
         results[model]['cumweight'] = cumweight
         if results[model]['cumweight'] < 0.9999:
             good_models.append([model, int(1000*results[model]['weight']+0.5)])
-    print >> STDERR,  '\n\n*************************************'
-    print >> STDERR,      '         TABLE OF WEIGHTS'
+    print >> STDOUT,  '\n\n*************************************'
+    print >> STDOUT,      '         TABLE OF WEIGHTS'
     if speed:
-        print >> STDERR,  ' (WARNING: no topology optimization)'
-    print >> STDERR,      '*************************************\n'
-    print >> STDERR,  '   %-14s | %-4s | %-9s | %-8s | %-9s | %-6s | %-5s ' % \
+        print >> STDOUT,  ' (WARNING: no topology optimization)'
+    print >> STDOUT,      '*************************************\n'
+    print >> STDOUT,  '   %-14s | %-4s | %-9s | %-8s | %-9s | %-6s | %-5s ' % \
           ('MODEL', 'K', 'lnL', 'AIC', 'delta AIC',
            'Weight', 'Cumulative weights')
-    print >> STDERR, '   ' + '-'*80
-    print >> STDERR, \
+    print >> STDOUT, '   ' + '-'*80
+    print >> STDOUT, \
           '\n'.join (map (lambda x: '   %-15s|'%(x) + \
                           ' %-4s |'   % str   (results[x]['K'])         +\
                           ' %-9.2f |' % float (results[x]['lnL'])       +\
@@ -113,7 +114,7 @@ def aic_calc(results, speed):
                           ' %-6.3f |' % float (results[x]['weight'])    +\
                           ' %-5.3f'   % float (results[x]['cumweight']) \
                           , ord_aic))
-    print >> STDERR, '\n'
+    print >> STDOUT, '\n'
     return results, ord_aic
 
 
@@ -145,25 +146,25 @@ def main():
                 wanted_models.append(model)
                 break
         wanted_models = ','.join(wanted_models)
-        print >> STDERR,  '\nREFINING...\n    doing the same but computing topologies' + \
+        print >> STDOUT,  '\nREFINING...\n    doing the same but computing topologies' + \
               ' only for models that sums a weight of 0.95\n\n    ' + \
               wanted_models + '\n'
         results = run_phyml(opts.algt, wanted_models, \
                             False, opts.verb, opts.protein, opts.support,
                             sequential=opts.sequential, rerun=True)
         results, ord_aic = aic_calc(results, False)
-    print >> STDERR,  '\n\n*************************************************'
+    print >> STDOUT,  '\n\n*************************************************'
     results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
-    print >> STDERR,\
+    print >> STDOUT,\
           'Re-run of best model with computation of rates and and support...'
     cmd = results[ord_aic[0]]['cmnd']
     cmd [cmd.index ('-b')+1] = '-4'
-    print >> STDERR, '  Command line = ' + ' '.join (cmd) + '\n'
+    print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
     (out, err) = Popen(cmd, stdout=PIPE).communicate()
     tree = get_tree   (opts.algt + '_phyml_tree.txt')
-    print >> STDERR, '\nTree corresponding to best model, '\
+    print >> STDOUT, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
-    print >> STDERR,  tree
+    print >> STDOUT,  tree
     if opts.outfile:
         open (opts.outfile, 'w').write (tree)
     if opts.outtrees:
@@ -174,7 +175,7 @@ def main():
                        '\ntree (nw):    ' +results [run]['tree'] + '\n')
         out.close ()
 
-    print "Done."
+    print >> STDERR, "Done."
 
 def parse_stats(path):
     '''
@@ -296,7 +297,7 @@ Reads sequeneces from file fasta format, and align acording to translation.
     if opts.models == (' '*80).join(map (lambda x: x  +': ' + ','.join(model_list[x]), model_list)):
         opts.models = ','.join (model_list [typ])
     if len (set (opts.models.split(',')) - set (model_list[typ])) > 0:
-        print >>STDERR, 'ERROR: those models are not in list of ' + \
+        print >> STDERR, 'ERROR: those models are not in list of ' + \
               'allowed models: \n   '+ \
                ', '.join (list (set (opts.models.split(',')) - \
                                 set (model_list[typ]))) + '\n\n'
