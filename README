@@ -1,0 +1,12 @@
+###  README --- /home/francisco/Box/utils/pmodeltest/
+
+## Copyright 2011 Francois Serra
+##
+## Author: francisco@evolution
+## Keywords: Phylogeny modeltest model selection AIC Akaike
+
+Usage:
+./pmodeltest -i example/protein.phy [-o tree] [-O trees] [running options]
+
+
+
