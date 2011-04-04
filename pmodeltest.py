@@ -19,7 +19,7 @@ from subprocess import Popen, PIPE
 from re import sub
 from sys import stderr as STDERR
 from sys import stdout as STDOUT
-from numpy import exp
+from cmath import exp
 
 def run_phyml(algt, wanted_models, speed, verb, protein,
               support, sequential=True, rerun=False):
@@ -86,7 +86,7 @@ def aic_calc(results, speed):
     min_aic = results[ord_aic[0]]['AIC']
     for model in ord_aic:
         results[model]['deltar'] =  results[model]['AIC'] - min_aic
-        results[model]['weight'] = exp (-0.5 * results[model]['deltar'])
+        results[model]['weight'] = exp (-0.5 * results[model]['deltar']).real
     sumweight = sum (map (lambda x: results[x]['weight'], results.keys()))
     cumweight = 0
     good_models = []
@@ -175,7 +175,7 @@ def main():
                        '\ntree (nw):    ' +results [run]['tree'] + '\n')
         out.close ()
 
-    print >> STDERR, "Done."
+    print >> STDOUT, "Done."
 
 def parse_stats(path):
     '''
