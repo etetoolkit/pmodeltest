@@ -10,7 +10,7 @@ Return 'best' tree with SH branch support value.
 __author__  = "francois serra"
 __email__   = "francois@barrabin.org"
 __licence__ = "GPLv3"
-__version__ = "1.02c"
+__version__ = "1.03"
 __title__   = "pmodeltest v%s" % __version__
 
 
@@ -55,8 +55,13 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                     log =  '\nModel ' + model_name + inv + gam + freq + '\n'
                     log += '  Command line = '
                     log += ' '.join (command_list) + '\n'
-                    (out, err) = Popen(command_list, stdout=PIPE).communicate()
-                    (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
+                    # here the 'echo "end" |' is because in somes cases PhyML stays awaiting for keypress.
+                    (out, err) = Popen('echo "end" | '+' '.join (command_list), shell=True,
+                                    stdout=PIPE).communicate()
+                    try:
+                        (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
+                    except UnboundLocalError:
+                        exit ('ERROR: PhyML unable to read alignment\n')
                     # num of param = X (nb of branches) + 1(topology) + Y(model)
                     numparam = model_param + int (opt=='tl') + \
                                (inv != '') + (gam != '') + numspe*2-3
@@ -156,7 +161,7 @@ def main():
     print >> STDOUT,  '\n\n*************************************************'
     results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
     print >> STDOUT,\
-          'Re-run of best model with computation of rates and and support...'
+          'Re-run of best model with computation of rates and support...'
     cmd = results[ord_aic[0]]['cmnd']
     cmd [cmd.index ('-b')+1] = '-4'
     print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
