@@ -10,7 +10,7 @@ Return 'best' tree with SH branch support value.
 __author__  = "francois serra"
 __email__   = "francois@barrabin.org"
 __licence__ = "GPLv3"
-__version__ = "1.02c"
+__version__ = "1.03"
 __title__   = "pmodeltest v%s" % __version__
 
 
@@ -55,7 +55,8 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                     log =  '\nModel ' + model_name + inv + gam + freq + '\n'
                     log += '  Command line = '
                     log += ' '.join (command_list) + '\n'
-                    (out, err) = Popen(command_list, stdout=PIPE).communicate()
+                    (out, err) = Popen('echo "end" | ' + ' '.join (command_list),
+                                       stdout=PIPE, shell=True).communicate()
                     (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
                     # num of param = X (nb of branches) + 1(topology) + Y(model)
                     numparam = model_param + int (opt=='tl') + \
@@ -63,9 +64,9 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                     aic = 2*numparam-2*lnl
                     log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
                            ', AIC = ' + str (aic)
-                    if err is not None:
+                    if err is not None or 'Err: ' in out:
                         exit ('problem running phyml: '+out)
-                    results[model_name + inv + gam + freq] =  {
+                    results [model_name + inv + gam + freq] =  {
                         'AIC' : aic,
                         'lnL' : lnl,
                         'K'   : numparam,
@@ -81,13 +82,13 @@ def aic_calc(results, speed):
     '''
     compute and displays AICs etc... 
     '''
-    ord_aic = sorted (map (lambda x: [results[x]['AIC'], x], results.keys()))
-    ord_aic = map (lambda x: x[1], ord_aic)
+    ord_aic = sorted ([ [results[x]['AIC'], x] for x in results.keys() ])
+    ord_aic = [ x[1] for x in ord_aic ]
     min_aic = results[ord_aic[0]]['AIC']
     for model in ord_aic:
         results[model]['deltar'] =  results[model]['AIC'] - min_aic
         results[model]['weight'] = exp (-0.5 * results[model]['deltar']).real
-    sumweight = sum (map (lambda x: results[x]['weight'], results.keys()))
+    sumweight = sum ([ results[x]['weight'] for x in results.keys() ])
     cumweight = 0
     good_models = []
     for model in ord_aic:
@@ -106,14 +107,14 @@ def aic_calc(results, speed):
            'Weight', 'Cumulative weights')
     print >> STDOUT, '   ' + '-'*80
     print >> STDOUT, \
-          '\n'.join (map (lambda x: '   %-15s|'%(x) + \
-                          ' %-4s |'   % str   (results[x]['K'])         +\
-                          ' %-9.2f |' % float (results[x]['lnL'])       +\
-                          ' %-8.2f |' % float (results[x]['AIC'])       +\
-                          ' %-9.3f |' % float (results[x]['deltar'])    +\
-                          ' %-6.3f |' % float (results[x]['weight'])    +\
-                          ' %-5.3f'   % float (results[x]['cumweight']) \
-                          , ord_aic))
+          '\n'.join ([ '   %-15s|'%(x) + \
+                       ' %-4s |'   % str   (results[x]['K'])         +\
+                       ' %-9.2f |' % float (results[x]['lnL'])       +\
+                       ' %-8.2f |' % float (results[x]['AIC'])       +\
+                       ' %-9.3f |' % float (results[x]['deltar'])    +\
+                       ' %-6.3f |' % float (results[x]['weight'])    +\
+                       ' %-5.3f'   % float (results[x]['cumweight']) \
+                       for x in ord_aic ])
     print >> STDOUT, '\n'
     return results, ord_aic
 
@@ -157,11 +158,16 @@ def main():
     results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
     print >> STDOUT,\
           'Re-run of best model with computation of rates and and support...'
-    cmd = results[ord_aic[0]]['cmnd']
+    cmd = results [ord_aic[0]]['cmnd']
     cmd [cmd.index ('-b')+1] = '-4'
     print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
-    (out, err) = Popen(cmd, stdout=PIPE).communicate()
+    (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
+                       stdout=PIPE, shell=True).communicate()
+    if err is not None or 'Err: ' in out:
+        exit ('problem at last run of phyml: '+out)
     tree = get_tree   (opts.algt + '_phyml_tree.txt')
+    print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
+    print_model_estimations (parse_stats (opts.algt + '_phyml_stats.txt')[2])
     print >> STDOUT, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDOUT,  tree
@@ -170,12 +176,27 @@ def main():
     if opts.outtrees:
         out = open (opts.outtrees, 'w')
         for run in results:
-            out.write ('command: ' + \
-                       ' '.join (results [run]['cmnd']) + \
-                       '\ntree (nw):    ' +results [run]['tree'] + '\n')
+            print >> STDOUT, 'command: ' + \
+                  ' '.join (results [run]['cmnd']) + \
+                  '\ntree (nw):    ' + results [run]['tree'] + '\n'
         out.close ()
 
     print >> STDOUT, "Done."
+
+def print_model_estimations (dic):
+    '''
+    prints table with estimation of rates/frequencies done by phyML
+    '''
+    for key in filter (lambda x: not x.startswith ('freq') and \
+                       not x.startswith ('rate'), dic):
+        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
+    print >> STDOUT, ''
+    for key in filter (lambda x: x.startswith ('freq'), dic):
+        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
+    print >> STDOUT, ''
+    for key in filter (lambda x: x.startswith ('rate'), dic):
+        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
+    print >> STDOUT, ''
 
 def parse_stats(path):
     '''
@@ -188,30 +209,30 @@ def parse_stats(path):
         elif line.startswith('. Number of taxa:'):
             numspe       = int (line.strip().split()[-1])
         elif line.startswith('  - f(A)= '):
-            dic['fA']    = float (line.strip().split()[-1])
+            dic['frequency (A)']    = float (line.strip().split()[-1])
         elif line.startswith('  - f(T)= '):
-            dic['fT']    = float (line.strip().split()[-1])
+            dic['frequency (T)']    = float (line.strip().split()[-1])
         elif line.startswith('  - f(G)= '):
-            dic['fG']    = float (line.strip().split()[-1])
+            dic['frequency (G)']    = float (line.strip().split()[-1])
         elif line.startswith('  - f(C)= '):
-            dic['fC']    = float (line.strip().split()[-1])
+            dic['frequency (C)']    = float (line.strip().split()[-1])
         elif line.startswith('  A <-> C '):
-            dic['rAC']    = float (line.strip().split()[-1])
+            dic['rate A <-> C']    = float (line.strip().split()[-1])
         elif line.startswith('  A <-> G'):
-            dic['rAG']    = float (line.strip().split()[-1])
+            dic['rate A <-> G']    = float (line.strip().split()[-1])
         elif line.startswith('  A <-> T'):
-            dic['rAT']    = float (line.strip().split()[-1])
+            dic['rate A <-> T']    = float (line.strip().split()[-1])
         elif line.startswith('  C <-> G'):
-            dic['rCG']    = float (line.strip().split()[-1])
+            dic['rate C <-> G']    = float (line.strip().split()[-1])
         elif line.startswith('  C <-> T'):
-            dic['rCT']    = float (line.strip().split()[-1])
+            dic['rate C <-> T']    = float (line.strip().split()[-1])
         elif line.startswith('  C <-> G'):
-            dic['rCG']    = float (line.strip().split()[-1])
+            dic['rate C <-> G']    = float (line.strip().split()[-1])
         elif line.startswith('. Proportion of invariant:'):
-            dic['inv']   = float (sub ('.*([0-9]+\.[0-9]+).*',
+            dic['prop. of invariant']   = float (sub ('.*([0-9]+\.[0-9]+).*',
                                        '\\1', line.strip()))
         elif line.startswith('  - Gamma shape parameter:'):
-            dic['gamma'] = float (sub ('.*([0-9]+\.[0-9]+).*',
+            dic['gamma shape'] = float (sub ('.*([0-9]+\.[0-9]+).*',
                                        '\\1', line.strip()))
     return (numspe, lnl, dic)
 
@@ -282,8 +303,11 @@ Reads sequeneces from file fasta format, and align acording to translation.
                       help=\
                       '''[%default] Displays information about PhyML command
                       line.''')
-    parser.add_option('-m', metavar='LIST', \
-                      dest='models', default=(' '*80).join(map (lambda x: x  +': ' + ','.join(model_list[x]), model_list)), \
+    parser.add_option('-m', metavar='LIST',
+                      dest='models',
+                      default=(' '*80).join([ m  +': ' + \
+                                              ','.join (model_list[m]) \
+                                              for m in model_list ]),
                       help=\
                       '''[%default] DNA/AA models.                            
                       e.g.: -m "JC,TrN,GTR"
@@ -294,7 +318,8 @@ Reads sequeneces from file fasta format, and align acording to translation.
         exit(parser.print_help())
     if opts.medium:
         opts.speedy = True
-    if opts.models == (' '*80).join(map (lambda x: x  +': ' + ','.join(model_list[x]), model_list)):
+    if opts.models == (' '*80).join([ m  +': ' + ','.join(model_list[m]) \
+                                      for m in model_list ]):
         opts.models = ','.join (model_list [typ])
     if len (set (opts.models.split(',')) - set (model_list[typ])) > 0:
         print >> STDERR, 'ERROR: those models are not in list of ' + \
