@@ -188,12 +188,12 @@ def main():
     if opts.outfile:
         open (opts.outfile, 'w').write (tree)
     if opts.outtrees:
-        out = open (opts.outtrees, 'w')
+        out_t = open (opts.outtrees, 'w')
         for run in results:
-            print >> STDOUT, 'command: ' + \
-                  ' '.join (results [run]['cmnd']) + \
-                  '\ntree (nw):    ' + results [run]['tree'] + '\n'
-        out.close ()
+            out_t.write ('command: ' + \
+                         ' '.join (results [run]['cmnd']) + \
+                         '\ntree (nw):    ' + results [run]['tree'] + '\n')
+        out_t.close ()
 
     print >> STDOUT, "Done."
 
