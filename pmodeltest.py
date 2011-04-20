@@ -80,7 +80,7 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
                     log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
                            ', AIC = ' + str (aic)
                     if err is not None or 'Err: ' in out:
-                        exit ('problem running phyml: '+out)
+                        exit ('ERROR: problem running phyml: '+out)
                     results [model_name + inv + gam + freq] =  {
                         'AIC' : aic,
                         'lnL' : lnl,
@@ -174,12 +174,15 @@ def main():
     print >> STDOUT,\
           'Re-run of best model with computation of rates and support...'
     cmd = results[ord_aic[0]]['cmnd']
+    # add best tree search and support to phyml command line
     cmd [cmd.index ('-b')+1] = '-4'
+    cmd += ['-s', 'BEST']
     print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
+    # run last phyml
     (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
                        stdout=PIPE, shell=True).communicate()
     if err is not None or 'Err: ' in out:
-        exit ('problem at last run of phyml: '+out)
+        exit ('ERROR: problem at last run of phyml: '+out)
     tree = get_tree   (opts.algt + '_phyml_tree.txt')
     print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
     print_model_estimations (parse_stats (opts.algt + '_phyml_stats.txt')[2])
@@ -384,7 +387,7 @@ models = {'nt':
           }
 
 
-freqs = {'nt': {'': ['-f', '0.25 0.25 0.25 0.25'], '+F': ['-f', 'e']},
+freqs = {'nt': {'': ['-f', '0.25 0.25 0.25 0.25'], '+F': ['-f', 'm']},
          'aa': {'': ['-f', 'm'], '+F': ['-f', 'e']}}
 
 invts = {'': [], '+I': ['-v', 'e'  ]}
