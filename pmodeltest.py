@@ -24,7 +24,7 @@ __licence__ = "GPLv3"
 __version__ = "1.03"
 __title__   = "pmodeltest v%s" % __version__
 
-
+import os
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 from re import sub
@@ -32,67 +32,86 @@ from sys import stderr as STDERR
 from sys import stdout as STDOUT
 from cmath import exp
 
-def run_phyml(algt, wanted_models, speed, verb, protein,
-              support, sequential=True, rerun=False):
-    '''
-    runs a list of models and returns a dictionary of results.
-    If rerun is True, will have into account +I+G information
-    and only run the wanted ones.
+def extend_dict(source, target):
+    for k,v in source.iteritems():
+        target[k] = v
+
+def run_parallel(cmds):
+    for c in cmds:
+        os.system(c)
+
+def get_test_thread(wanted_models, speed, protein,
+                    support, sequential=True):
+    '''Generate a list of phyml executions needed to perform the whole
+    test. The complete test thread is returned as a list of
+    dictionaries. Each dictionary contains the needed phyml arguments.
     '''
     opt = 'l'  if speed   else 'tl'
     sup = '-4' if support else '0'
     typ = 'aa' if protein else 'nt'
-    results = {}
-    for model in models [typ]:
+    test_thread = []
+
+    for model in models[typ]:
         for freq in freqs[typ].keys():
-            if not rerun and modelnames[typ][model[1]+freq][0] not in \
-                   sub('\+.*', '', wanted_models).split(','):
+            mname  = modelnames[typ][model + freq][0]
+            mparams = modelnames[typ][model + freq][1]
+            if modelnames[typ][model+freq][0] not in wanted_models:
                 continue
+
             for inv in invts.keys():
                 for gam in gamma.keys():
-                    if rerun:
-                        if modelnames[typ][model[1]+freq][0] + inv + gam + freq\
-                               not in wanted_models.split(','):
-                            continue
-                    model_name  = modelnames[typ][model[1] + freq][0]
-                    model_param = modelnames[typ][model[1] + freq][1]
-                    command_list = ['phyml', '--sequential'*sequential,
-                                    '-i', algt,'-d',
-                                    'aa' if protein else 'nt',
-                                    '-n', '1',
-                                    '-b', sup,
-                                    '-o', opt] +  model + freqs[typ][freq] \
-                                    + invts[inv] + gamma[gam]
-                    log =  '\nModel ' + model_name + inv + gam + freq + '\n'
-                    log += '  Command line = '
-                    log += ' '.join (command_list) + '\n'
-                    # here the 'echo "end" |' is because in somes cases PhyML stays awaiting for keypress.
-                    (out, err) = Popen('echo "end" | '+' '.join (command_list), shell=True,
-                                    stdout=PIPE).communicate()
-                    try:
-                        (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
-                    except UnboundLocalError:
-                        exit ('ERROR: PhyML unable to read alignment\n')
-                    # num of param = X (nb of branches) + 1(topology) + Y(model)
-                    numparam = model_param + int (opt=='tl') + \
-                               (inv != '') + (gam != '') + numspe*2-3
-                    aic = 2*numparam-2*lnl
-                    log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
-                           ', AIC = ' + str (aic)
-                    if err is not None or 'Err: ' in out:
-                        exit ('ERROR: problem running phyml: '+out)
-                    results [model_name + inv + gam + freq] =  {
-                        'AIC' : aic,
-                        'lnL' : lnl,
-                        'K'   : numparam,
-                        'dic' : dic,
-                        'tree': get_tree (algt + '_phyml_tree.txt'),
-                        'cmnd': command_list}
-                    if verb:
-                        print >> STDOUT, log
+                    phyml_args = {
+                        '-d': 'aa' if protein else 'nt',
+                        '-n': '1',
+                        '-b': sup,
+                        '-o': opt,
+                        '-m': model,
+                    }
+                    extend_dict(freqs[typ][freq], phyml_args)
+                    extend_dict(invts[inv], phyml_args)
+                    extend_dict(gamma[gam], phyml_args)
+                    test_thread.append([phyml_args, mname, mparams, freq, inv, gam, opt])
+    return test_thread
+
+def get_cmd(args):
+    cmd = "phyml " + ' '.join(["%s %s" %(k,v)
+                               for k,v in args.iteritems()])
+    return cmd 
+    
+def iter_test_commands(alg_path, test_thread):
+    for args, mname, mparams, freq, inv, gam, opt in test_thread:
+        test_alg_path = alg_path + ".%s_%s_%s_%s" %(mname,freq,inv,gam)
+
+        os.symlink(os.path.basename(alg_path), test_alg_path)
+        
+        args["-i"] = test_alg_path
+        yield get_cmd(args)
+                                           
+def collect_results(alg_path, test_thread):
+    results = {}
+    for args, mname, mparams, freq, inv, gam, opt in test_thread:
+        test_alg_path = alg_path + ".%s_%s_%s_%s" %(mname,freq,inv,gam)
+
+        numspe, lnl, dic = parse_stats(test_alg_path + '_phyml_stats.txt')
+        # num of param = X (nb of branches) + 1(topology) + Y(model)
+        numparam = mparams + int (opt=='tl') + \
+                   (inv != '') + (gam != '') + numspe*2-3
+        aic = 2 * numparam-2 * lnl
+        #log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
+        #       ', AIC = ' + str (aic)
+        #if err is not None or 'Err: ' in out:
+        #    exit ('ERROR: problem running phyml: '+out)
+        results[mname + inv + gam + freq] =  {
+            'AIC' : aic,
+            'lnL' : lnl,
+            'K'   : numparam,
+            'dic' : dic,
+            'tree': get_tree(test_alg_path + '_phyml_tree.txt'),
+            'cmnd': args}
+        #if verb:
+        #    print >> STDOUT, log
     return results
-
-
+    
 def aic_calc(results, speed):
     '''
     compute and displays AICs etc... 
@@ -142,50 +161,67 @@ def main():
     opts = get_options()
     # remove gamma inv and frequencies if not wanted
     if opts.nogam:
-        del (gamma ['+G'])
+        del gamma['+G']
     if opts.noinv:
-        del (invts ['+I'])
+        del invts['+I']
     if opts.nofrq:
-        del (freqs ['nt']['+F'])
-        del (freqs ['aa']['+F'])
+        del freqs['nt']['+F']
+        del freqs['aa']['+F']
+
     # first run of models
-    results = run_phyml(opts.algt, opts.models, opts.speedy, opts.verb,
-                        opts.protein, opts.support, sequential=opts.sequential)
+    #results = run_phyml(opts.algt, opts.models, opts.speedy, opts.verb,
+    #                    opts.protein, opts.support, sequential=opts.sequential)
+
+    alg_path = os.path.realpath(opts.algt)
+    if not os.path.exists("pmodeltest_results"):
+        os.mkdir("pmodeltest_results")
+    alg_link_path = os.path.join("pmodeltest_results",
+                                 os.path.basename(opts.algt))
+    if not os.path.exists(alg_link_path):
+        os.symlink(alg_path, alg_link_path)
+        print alg_path, alg_link_path
+
+    wanted_models = set(sub('\+.*', '', opts.models).split(','))        
+    test_thread = get_test_thread(wanted_models, opts.speedy,
+                                  opts.protein, opts.support, opts.sequential)
+    run_parallel([cmd for cmd in iter_test_commands(alg_link_path, test_thread)])
+    results = collect_results(alg_link_path, test_thread)
     results, ord_aic = aic_calc(results, opts.speedy)
+    print ord_aic
+
     # if bit fast, second run with wanted models (that sums weight of 0.95)
     if opts.medium:
-        wanted_models = []
+        best_results = {}
         for model in ord_aic:
-            if results[model]['cumweight'] < 0.95:
-                wanted_models.append(model)
-            else:
-                wanted_models.append(model)
+            best_results[model] = results[model]
+            if results[model]['cumweight'] > 0.95:
                 break
-        wanted_models = ','.join(wanted_models)
+
         print >> STDOUT,  '\nREFINING...\n    doing the same but computing topologies' + \
-              ' only for models that sums a weight of 0.95\n\n    ' + \
-              wanted_models + '\n'
-        results = run_phyml(opts.algt, wanted_models, \
-                            False, opts.verb, opts.protein, opts.support,
-                            sequential=opts.sequential, rerun=True)
-        results, ord_aic = aic_calc(results, False)
+              ' only for models that sums a weight of 0.95\n\n    '
+
+        refine_cmds = []
+        for r in best_results.itervalues():
+            args = r["cmnd"]
+            args["-o"] = "lr"
+            refine_cmds.append(get_cmd(args))
+        run_parallel(refine_cmds)
+        results, ord_aic = aic_calc(best_results, False)
+
     print >> STDOUT,  '\n\n*************************************************'
-    results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
+    #results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
+    winner_args = results[ord_aic[0]]['cmnd']
+    winner_args["-o"] = "tlr"
+    winner_args["-b"] = "-4"
+    winner_args["-s"] = "BEST"
+    winner_args["-i"] = alg_path
+    run_parallel([get_cmd(winner_args)])
     print >> STDOUT,\
           'Re-run of best model with computation of rates and support...'
-    cmd = results[ord_aic[0]]['cmnd']
-    # add best tree search and support to phyml command line
-    cmd [cmd.index ('-b')+1] = '-4'
-    cmd += ['-s', 'BEST']
-    print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
-    # run last phyml
-    (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
-                       stdout=PIPE, shell=True).communicate()
-    if err is not None or 'Err: ' in out:
-        exit ('ERROR: problem at last run of phyml: '+out)
-    tree = get_tree   (opts.algt + '_phyml_tree.txt')
+    
+    tree = get_tree   (alg_path + '_phyml_tree.txt')
     print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
-    print_model_estimations (parse_stats (opts.algt + '_phyml_stats.txt')[2])
+    print_model_estimations (parse_stats (alg_path + '_phyml_stats.txt')[2])
     print >> STDOUT, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDOUT,  tree
@@ -221,7 +257,7 @@ def parse_stats(path):
     parse stats file of phyml, to extract the likelyhood value
     '''
     dic = {}
-    for line in open(path):
+    for line in open(path, "rU"):
         if line.startswith('. Log-likelihood:'):
             lnl          = float (line.strip().split()[-1])
         elif line.startswith('. Number of taxa:'):
@@ -338,7 +374,7 @@ Reads sequences from file fasta format, and align according to translation.
         opts.speedy = True
     if opts.models == (' '*80).join([ m  +': ' + ','.join(model_list[m]) \
                                       for m in model_list ]):
-        opts.models = ','.join (model_list [typ])
+        opts.models = ','.join (model_list[typ])
     if len (set (opts.models.split(',')) - set (model_list[typ])) > 0:
         print >> STDERR, 'ERROR: those models are not in list of ' + \
               'allowed models: \n   '+ \
@@ -358,41 +394,41 @@ global gamma
 global modelnames
 
 models = {'nt':
-          [ ['-m', '000000'],
-            ['-m', '010010'],
-            ['-m', '010020'],
-            ['-m', '012210'],
-            ['-m', '010212'],
-            ['-m', '012012'],
-            ['-m', '012230'],
-            ['-m', '010232'],
-            ['-m', '012032'],
-            ['-m', '012314'],
-            ['-m', '012345'] ],
+          [ '000000',
+            '010010',
+            '010020',
+            '012210',
+            '010212',
+            '012012',
+            '012230',
+            '010232',
+            '012032',
+            '012314',
+            '012345'],
           'aa':
-          [ ['-m', 'LG'      ],
-            ['-m', 'WAG'     ],
-            ['-m', 'JTT'     ],
-            ['-m', 'MtREV'   ],
-            ['-m', 'Dayhoff' ],
-            ['-m', 'DCMut'   ],
-            ['-m', 'RtREV'   ],
-            ['-m', 'CpREV'   ],
-            ['-m', 'VT'      ],
-            ['-m', 'Blosum62'],
-            ['-m', 'MtMam'   ],
-            ['-m', 'MtArt'   ],
-            ['-m', 'HIVw'    ],
-            ['-m', 'HIVb'    ] ]
+          [ 'LG',
+            'WAG',
+            'JTT',
+            'MtREV',
+            'Dayhoff',
+            'DCMut',
+            'RtREV',
+            'CpREV',
+            'VT',
+            'Blosum62',
+            'MtMam',
+            'MtArt',
+            'HIVw',
+            'HIVb']
           }
 
 
-freqs = {'nt': {'': ['-f', '0.25 0.25 0.25 0.25'], '+F': ['-f', 'm']},
-         'aa': {'': ['-f', 'm'], '+F': ['-f', 'e']}}
+freqs = {'nt': {'': {'-f': '0.25 0.25 0.25 0.25'}, '+F': {'-f':'m'}},
+         'aa': {'': {'-f': 'm'}, '+F': {'-f': 'e'}}}
 
-invts = {'': [], '+I': ['-v', 'e'  ]}
+invts = {'': {}, '+I': {'-v': 'e'}}
 
-gamma = {'': ['-c', '1', '-a', '1.0'], '+G': ['-c', '4', '-a', 'e']}
+gamma = {'': {'-c': '1', '-a': '1.0'}, '+G': {'-c': '4', '-a': 'e'}}
 
 # phyml model names, real names, and number of extra parameters
 modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
@@ -446,6 +482,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'HIVw'     + '+F': ['HIVw'    , 19],
                        'HIVb'     + '+F': ['HIVb'    , 19]}
                }
+
 
 
 if __name__ == "__main__":
