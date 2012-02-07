@@ -77,7 +77,7 @@ def get_cmd(args):
     cmd = "phyml " + ' '.join(["%s %s" %(k,v)
                                for k,v in args.iteritems()])
     return cmd 
-    
+
 def iter_test_commands(alg_path, test_thread):
     for args, mname, mparams, freq, inv, gam, opt in test_thread:
         test_alg_path = alg_path + ".%s_%s_%s_%s" %(mname,freq,inv,gam)
@@ -86,7 +86,7 @@ def iter_test_commands(alg_path, test_thread):
         
         args["-i"] = test_alg_path
         yield get_cmd(args)
-                                           
+
 def collect_results(alg_path, test_thread):
     results = {}
     for args, mname, mparams, freq, inv, gam, opt in test_thread:
@@ -111,7 +111,7 @@ def collect_results(alg_path, test_thread):
         #if verb:
         #    print >> STDOUT, log
     return results
-    
+
 def aic_calc(results, speed):
     '''
     compute and displays AICs etc... 
