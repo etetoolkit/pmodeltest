@@ -31,8 +31,12 @@ from re import sub
 from sys import stderr as STDERR
 from sys import stdout as STDOUT
 from cmath import exp
+# easy_install http://pylockfile.googlecode.com/files/lockfile-0.9.1.tar.gz
+from lockfile import FileLock
+from time import sleep
+import os
 
-def run_phyml(algt, wanted_models, speed, verb, protein,
+def get_job_list(algt, wanted_models, speed, verb, protein,
               support, sequential=True, rerun=False):
     '''
     runs a list of models and returns a dictionary of results.
@@ -42,56 +46,77 @@ def run_phyml(algt, wanted_models, speed, verb, protein,
     opt = 'l'  if speed   else 'tl'
     sup = '-4' if support else '0'
     typ = 'aa' if protein else 'nt'
-    results = {}
+    job_list = {}
     for model in models [typ]:
         for freq in freqs[typ].keys():
-            if not rerun and modelnames[typ][model[1]+freq][0] not in \
-                   sub('\+.*', '', wanted_models).split(','):
+            if modelnames[typ][model+freq][0] not in wanted_models:
                 continue
+            model_name  = modelnames[typ][model + freq][0]
+            model_param = modelnames[typ][model + freq][1]
             for inv in invts.keys():
                 for gam in gamma.keys():
-                    if rerun:
-                        if modelnames[typ][model[1]+freq][0] + inv + gam + freq\
-                               not in wanted_models.split(','):
-                            continue
-                    model_name  = modelnames[typ][model[1] + freq][0]
-                    model_param = modelnames[typ][model[1] + freq][1]
-                    command_list = ['phyml', '--sequential'*sequential,
-                                    '-i', algt,'-d',
-                                    'aa' if protein else 'nt',
-                                    '-n', '1',
-                                    '-b', sup,
-                                    '-o', opt] +  model + freqs[typ][freq] \
-                                    + invts[inv] + gamma[gam]
-                    log =  '\nModel ' + model_name + inv + gam + freq + '\n'
-                    log += '  Command line = '
-                    log += ' '.join (command_list) + '\n'
-                    # here the 'echo "end" |' is because in somes cases PhyML stays awaiting for keypress.
-                    (out, err) = Popen('echo "end" | '+' '.join (command_list), shell=True,
-                                    stdout=PIPE).communicate()
-                    try:
-                        (numspe, lnl, dic) = parse_stats(algt + '_phyml_stats.txt')
-                    except UnboundLocalError:
-                        exit ('ERROR: PhyML unable to read alignment\n')
-                    # num of param = X (nb of branches) + 1(topology) + Y(model)
-                    numparam = model_param + int (opt=='tl') + \
-                               (inv != '') + (gam != '') + numspe*2-3
-                    aic = 2*numparam-2*lnl
-                    log += '  K = '+str (numparam)+', lnL = '+str(lnl) + \
-                           ', AIC = ' + str (aic)
-                    if err is not None or 'Err: ' in out:
-                        exit ('ERROR: problem running phyml: '+out)
-                    results [model_name + inv + gam + freq] =  {
-                        'AIC' : aic,
-                        'lnL' : lnl,
-                        'K'   : numparam,
-                        'dic' : dic,
-                        'tree': get_tree (algt + '_phyml_tree.txt'),
-                        'cmnd': command_list}
-                    if verb:
-                        print >> STDOUT, log
-    return results
+                    job = model_name + inv + gam + freq
+                    job_list [job] = {
+                        'cmd': ['phyml', '--sequential'*sequential,
+                                '-i', algt,'-d',
+                                'aa' if protein else 'nt',
+                                '-n', '1',
+                                '-b', sup,
+                                '-o', opt,
+                                '-m', model,
+                                '--run_id', job] + freqs[typ][freq] + invts[inv] + gamma[gam],
+                        'params': model_param + int (opt=='tl') + (inv != '') + (gam != ''),
+                        'algt': algt
+                    }
+    return job_list
 
+def run_jobs(job_list, nprocs=1, refresh=2):
+    procs = {}
+    done = 0
+    todo = len (job_list)
+    jobs = job_list.keys()[:]
+    try:
+        while True:
+            if len(procs)<nprocs:
+                job = jobs.pop()
+                procs[job] = {'p': Popen(job_list[job]['cmd'], stderr=PIPE, stdout=PIPE),
+                              'job': job}
+                sleep(refresh)
+                continue
+            for p in procs:
+                if procs[p]['p'].poll() is None:
+                    continue
+                if procs[p]['p'].returncode == -9:
+                    print ' WAHOOO!!! this was killed:'
+                    print procs[p]
+                    return
+                out, err = procs[p]['p'].communicate()
+                if 'Err: ' in out:
+                    exit ('ERROR: problem running phyml: '+out)
+                del procs[p]
+                done += 1
+                job_list[job]['out'] = out
+                job_list[job]['err'] = err
+                break
+            sleep(refresh)
+            if done == todo:
+                break
+    except Exception as e:
+        print 'ERROR at', job
+        print e
+    return job_list
+
+def parse_jobs(job_list, algt):
+    for job in job_list:
+        (numspe, lnl, dic) = parse_stats(job_list[job]['algt'] + '_phyml_stats_%s.txt' % job)
+        numparam = job_list[job]['params'] + numspe*2-3
+        aic = 2*numparam-2*lnl
+        job_list[job]['AIC' ] = aic
+        job_list[job]['lnL' ] = lnl
+        job_list[job]['K'   ] = numparam
+        job_list[job]['dic' ] = dic
+        job_list[job]['tree'] = get_tree (algt + '_phyml_tree_%s.txt' % job)
+    return job_list
 
 def aic_calc(results, speed):
     '''
@@ -133,7 +158,16 @@ def aic_calc(results, speed):
     print >> STDOUT, '\n'
     return results, ord_aic
 
-
+def re_run(job_list, algt, cutoff=0.95, nprocs=1,refresh=2):
+    for job in job_list.keys()[:]:
+        if job_list[job]['cumweight'] > 0.95:
+            del job_list[job]
+    print >> STDOUT,  '\nREFINING...\n    doing the same but computing topologies' + \
+                      ' only for models that sums a weight of 0.95\n\n    ' + \
+                      '\n'.join(job_list.keys()) + '\n'
+    job_list = run_jobs(job_list, nprocs=nprocs,refresh=refresh)
+    return parse_jobs(job_list, algt)
+    
 def main():
     '''
     main function when called by command line.
@@ -142,38 +176,38 @@ def main():
     opts = get_options()
     # remove gamma inv and frequencies if not wanted
     if opts.nogam:
-        del (gamma ['+G'])
+        del gamma ['+G']
     if opts.noinv:
-        del (invts ['+I'])
+        del invts ['+I']
     if opts.nofrq:
-        del (freqs ['nt']['+F'])
-        del (freqs ['aa']['+F'])
+        del freqs ['nt']['+F']
+        del freqs ['aa']['+F']
+
+
+    alg_path = os.path.realpath(opts.algt)
+    if not os.path.exists("pmodeltest_results"):
+        os.mkdir("pmodeltest_results")
+    alg_link_path = os.path.join("pmodeltest_results",
+                                 os.path.basename(opts.algt))
+    if not os.path.exists(alg_link_path):
+        os.symlink(alg_path, alg_link_path)
+        print alg_path, alg_link_path
+        
     # first run of models
-    results = run_phyml(opts.algt, opts.models, opts.speedy, opts.verb,
-                        opts.protein, opts.support, sequential=opts.sequential)
+    results = get_job_list(opts.algt, opts.models, opts.speedy, opts.verb,
+                           opts.protein, opts.support, sequential=opts.sequential)
+    results = run_jobs(results,nprocs=2,refresh=0.5)
+    results = parse_jobs(results, opts.algt)
     results, ord_aic = aic_calc(results, opts.speedy)
     # if bit fast, second run with wanted models (that sums weight of 0.95)
     if opts.medium:
-        wanted_models = []
-        for model in ord_aic:
-            if results[model]['cumweight'] < 0.95:
-                wanted_models.append(model)
-            else:
-                wanted_models.append(model)
-                break
-        wanted_models = ','.join(wanted_models)
-        print >> STDOUT,  '\nREFINING...\n    doing the same but computing topologies' + \
-              ' only for models that sums a weight of 0.95\n\n    ' + \
-              wanted_models + '\n'
-        results = run_phyml(opts.algt, wanted_models, \
-                            False, opts.verb, opts.protein, opts.support,
-                            sequential=opts.sequential, rerun=True)
+        results = re_run(results, opts.algt, cutoff=0.95, refresh=0.5, nprocs=2)
         results, ord_aic = aic_calc(results, False)
     print >> STDOUT,  '\n\n*************************************************'
-    results[ord_aic[0]]['cmnd'][results[ord_aic[0]]['cmnd'].index ('-o') + 1] += 'r'
+    results[ord_aic[0]]['cmd'][results[ord_aic[0]]['cmd'].index ('-o') + 1] += 'r'
     print >> STDOUT,\
           'Re-run of best model with computation of rates and support...'
-    cmd = results[ord_aic[0]]['cmnd']
+    cmd = results[ord_aic[0]]['cmd']
     # add best tree search and support to phyml command line
     cmd [cmd.index ('-b')+1] = '-4'
     cmd += ['-s', 'BEST']
@@ -195,7 +229,7 @@ def main():
         out_t = open (opts.outtrees, 'w')
         for run in results:
             out_t.write ('command: ' + \
-                         ' '.join (results [run]['cmnd']) + \
+                         ' '.join (results [run]['cmd']) + \
                          '\ntree (nw):    ' + results [run]['tree'] + '\n')
         out_t.close ()
 
@@ -358,39 +392,39 @@ global gamma
 global modelnames
 
 models = {'nt':
-          [ ['-m', '000000'],
-            ['-m', '010010'],
-            ['-m', '010020'],
-            ['-m', '012210'],
-            ['-m', '010212'],
-            ['-m', '012012'],
-            ['-m', '012230'],
-            ['-m', '010232'],
-            ['-m', '012032'],
-            ['-m', '012314'],
-            ['-m', '012345'] ],
+          ['000000',
+           '010010',
+           '010020',
+           '012210',
+           '010212',
+           '012012',
+           '012230',
+           '010232',
+           '012032',
+           '012314',
+           '012345'],
           'aa':
-          [ ['-m', 'LG'      ],
-            ['-m', 'WAG'     ],
-            ['-m', 'JTT'     ],
-            ['-m', 'MtREV'   ],
-            ['-m', 'Dayhoff' ],
-            ['-m', 'DCMut'   ],
-            ['-m', 'RtREV'   ],
-            ['-m', 'CpREV'   ],
-            ['-m', 'VT'      ],
-            ['-m', 'Blosum62'],
-            ['-m', 'MtMam'   ],
-            ['-m', 'MtArt'   ],
-            ['-m', 'HIVw'    ],
-            ['-m', 'HIVb'    ] ]
+          ['LG'      ,
+           'WAG'     ,
+           'JTT'     ,
+           'MtREV'   ,
+           'Dayhoff' ,
+           'DCMut'   ,
+           'RtREV'   ,
+           'CpREV'   ,
+           'VT'      ,
+           'Blosum62',
+           'MtMam'   ,
+           'MtArt'   ,
+           'HIVw'    ,
+           'HIVb'    ]
           }
 
 
-freqs = {'nt': {'': ['-f', '0.25 0.25 0.25 0.25'], '+F': ['-f', 'm']},
+freqs = {'nt': {'': ['-f', '0.25,0.25,0.25,0.25'], '+F': ['-f', 'm']},
          'aa': {'': ['-f', 'm'], '+F': ['-f', 'e']}}
 
-invts = {'': [], '+I': ['-v', 'e'  ]}
+invts = {'': ['-v', '0'], '+I': ['-v', 'e']}
 
 gamma = {'': ['-c', '1', '-a', '1.0'], '+G': ['-c', '4', '-a', 'e']}
 
