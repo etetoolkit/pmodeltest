@@ -30,6 +30,7 @@ from re import sub
 from sys import stderr as STDERR
 from sys import stdout as STDOUT
 from cmath import exp
+from time import sleep
 
 def get_job_list(algt, wanted_models, speed, verb, protein,
               support, sequential=True, rerun=False):
