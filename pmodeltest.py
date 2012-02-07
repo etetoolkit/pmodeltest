@@ -73,7 +73,7 @@ def run_jobs(job_list, nprocs=1, refresh=2):
     jobs = job_list.keys()[:]
     try:
         while True:
-            if len(procs)<nprocs:
+            if len(procs)<nprocs and jobs:
                 job = jobs.pop()
                 procs[job] = {'p': Popen(job_list[job]['cmd'], stderr=PIPE, stdout=PIPE),
                               'job': job}
