@@ -205,9 +205,9 @@ def main():
                        stdout=PIPE, shell=True).communicate()
     if err is not None or 'Err: ' in out:
         exit ('ERROR: problem at last run of phyml: '+out)
-    tree = get_tree   (opts.algt + '_phyml_tree.txt')
+    tree = get_tree   (opts.algt + '_phyml_tree_%s.txt' % ord_aic[0])
     print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
-    print_model_estimations (parse_stats (opts.algt + '_phyml_stats.txt')[2])
+    print_model_estimations (parse_stats (opts.algt + '_phyml_stats_%s.txt' % ord_aic[0])[2])
     print >> STDOUT, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDOUT,  tree
