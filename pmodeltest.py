@@ -32,9 +32,7 @@ from sys import stderr as STDERR
 from sys import stdout as STDOUT
 from cmath import exp
 # easy_install http://pylockfile.googlecode.com/files/lockfile-0.9.1.tar.gz
-from lockfile import FileLock
 from time import sleep
-import os
 
 def get_job_list(algt, wanted_models, speed, verb, protein,
               support, sequential=True, rerun=False):
@@ -183,16 +181,6 @@ def main():
         del freqs ['nt']['+F']
         del freqs ['aa']['+F']
 
-
-    alg_path = os.path.realpath(opts.algt)
-    if not os.path.exists("pmodeltest_results"):
-        os.mkdir("pmodeltest_results")
-    alg_link_path = os.path.join("pmodeltest_results",
-                                 os.path.basename(opts.algt))
-    if not os.path.exists(alg_link_path):
-        os.symlink(alg_path, alg_link_path)
-        print alg_path, alg_link_path
-        
     # first run of models
     results = get_job_list(opts.algt, opts.models, opts.speedy, opts.verb,
                            opts.protein, opts.support, sequential=opts.sequential)
@@ -203,6 +191,7 @@ def main():
     if opts.medium:
         results = re_run(results, opts.algt, cutoff=0.95, refresh=0.5, nprocs=2)
         results, ord_aic = aic_calc(results, False)
+
     print >> STDOUT,  '\n\n*************************************************'
     results[ord_aic[0]]['cmd'][results[ord_aic[0]]['cmd'].index ('-o') + 1] += 'r'
     print >> STDOUT,\
