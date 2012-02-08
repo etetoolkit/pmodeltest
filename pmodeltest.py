@@ -31,7 +31,6 @@ from re import sub
 from sys import stderr as STDERR
 from sys import stdout as STDOUT
 from cmath import exp
-# easy_install http://pylockfile.googlecode.com/files/lockfile-0.9.1.tar.gz
 from time import sleep
 
 def get_job_list(algt, wanted_models, speed, verb, protein,
