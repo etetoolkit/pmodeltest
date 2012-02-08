@@ -24,7 +24,6 @@ __licence__ = "GPLv3"
 __version__ = "1.03"
 __title__   = "pmodeltest v%s" % __version__
 
-
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 from re import sub
@@ -74,7 +73,7 @@ def run_jobs(job_list, nprocs=1, refresh=2):
     jobs = job_list.keys()[:]
     try:
         while True:
-            if len(procs)<nprocs:
+            if len(procs)<nprocs and jobs:
                 job = jobs.pop()
                 procs[job] = {'p': Popen(job_list[job]['cmd'], stderr=PIPE, stdout=PIPE),
                               'job': job}
@@ -186,6 +185,7 @@ def main():
     results = run_jobs(results,nprocs=2,refresh=0.5)
     results = parse_jobs(results, opts.algt)
     results, ord_aic = aic_calc(results, opts.speedy)
+
     # if bit fast, second run with wanted models (that sums weight of 0.95)
     if opts.medium:
         results = re_run(results, opts.algt, cutoff=0.95, refresh=0.5, nprocs=2)
@@ -205,9 +205,9 @@ def main():
                        stdout=PIPE, shell=True).communicate()
     if err is not None or 'Err: ' in out:
         exit ('ERROR: problem at last run of phyml: '+out)
-    tree = get_tree   (opts.algt + '_phyml_tree.txt')
+    tree = get_tree   (opts.algt + '_phyml_tree_%s.txt' % ord_aic[0])
     print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
-    print_model_estimations (parse_stats (opts.algt + '_phyml_stats.txt')[2])
+    print_model_estimations (parse_stats (opts.algt + '_phyml_stats_%s.txt' % ord_aic[0])[2])
     print >> STDOUT, '\nTree corresponding to best model, '\
           + ord_aic[0] + ' (with SH-like branch supports alone)\n'
     print >> STDOUT,  tree
@@ -243,7 +243,7 @@ def parse_stats(path):
     parse stats file of phyml, to extract the likelyhood value
     '''
     dic = {}
-    for line in open(path):
+    for line in open(path, "rU"):
         if line.startswith('. Log-likelihood:'):
             lnl          = float (line.strip().split()[-1])
         elif line.startswith('. Number of taxa:'):
@@ -360,7 +360,7 @@ Reads sequences from file fasta format, and align according to translation.
         opts.speedy = True
     if opts.models == (' '*80).join([ m  +': ' + ','.join(model_list[m]) \
                                       for m in model_list ]):
-        opts.models = ','.join (model_list [typ])
+        opts.models = ','.join (model_list[typ])
     if len (set (opts.models.split(',')) - set (model_list[typ])) > 0:
         print >> STDERR, 'ERROR: those models are not in list of ' + \
               'allowed models: \n   '+ \
@@ -468,6 +468,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'HIVw'     + '+F': ['HIVw'    , 19],
                        'HIVb'     + '+F': ['HIVb'    , 19]}
                }
+
 
 
 if __name__ == "__main__":
