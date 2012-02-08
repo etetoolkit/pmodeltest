@@ -1,7 +1,7 @@
 __author__  = "francois serra"
 __email__   = "francois@barrabin.org"
 __licence__ = "GPLv3"
-__version__ = "1.03"
+__version__ = "1.04"
 __title__   = "pmodeltest v%s" % __version__
 
 from subprocess import Popen, PIPE
@@ -9,7 +9,7 @@ from re import sub
 from pmodeltest import *
 
 
-def main():
+def test_nt():
     errors = []
     data  = '/home/francisco/Box/utils/pmodeltest/examples/dna.phy'
     models = ['JC', 'K80', 'TrNef', 'TPM1', 'TPM2', 'TPM3',
@@ -17,7 +17,7 @@ def main():
               'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
               'TIM1', 'TIM2', 'TIM3', 'TVM', 'GTR']
     job_list = get_job_list(data, models, speed=True, protein=False,
-                            support=False)
+                            support=False, verbose=True)
     job_list = run_jobs(job_list, nprocs=2, refresh=0.01)
     job_list = parse_jobs(job_list, data)
     job_list, ord_aic = aic_calc(job_list, True)
@@ -87,11 +87,90 @@ def main():
         print expected_tree
         print tree
 
-    print '\n\n\n TEST FINISHED\n\n'
+    print '\n\n\n TEST NUCLEOTIDES FINISHED\n\n'
     if errors:
         print 'ERROR founds:'
         for e in errors:
             print e
+
+    print '\n\nas last check, have a look to jmodeltest result in test folder:'
+    #print ''.join([l for l in open('test/jmodeltest0.1_out.txt')])
+
+def test_aa():
+    errors = []
+    data  = '/home/francisco/Box/utils/pmodeltest/examples/protein.phy'
+    models = ['LG', 'WAG', 'JTT', 'MtREV', 'Dayhoff', 'DCMut',
+              'RtREV', 'CpREV', 'VT', 'Blosum62', 'MtMam',
+              'MtArt', 'HIVw', 'HIVb']
+    job_list = get_job_list(data, models, speed=True, protein=True,
+                            support=False)
+    job_list = run_jobs(job_list, nprocs=2, refresh=0.01)
+    job_list = parse_jobs(job_list, data)
+    job_list, ord_aic = aic_calc(job_list, True)
+    if not ord_aic == ['Dayhoff+G','DCMut+G','Dayhoff+I+G','DCMut+I+G','Dayhoff+I','DCMut+I','Dayhoff+G+F','DCMut+G+F','LG+G+F','Dayhoff+I+G+F','DCMut+I+G+F','LG+I+G+F','Dayhoff+I+F','DCMut+I+F','LG+I+F','WAG+G','WAG+I+G','WAG+I','Dayhoff','DCMut','WAG+G+F','RtREV+G+F','LG+G','WAG+I+G+F','WAG+I+F','RtREV+I+G+F','LG+I+G','RtREV+I+F','JTT+G+F','JTT+I+G+F','LG+I','JTT+I+F','JTT+G','JTT+I+G','Dayhoff+F','DCMut+F','CpREV+G+F','LG+F','JTT+I','CpREV+I+G+F','CpREV+I+F','WAG','WAG+F','MtArt+G+F','MtArt+I+G+F','RtREV+F','MtREV+G+F','JTT+F','MtREV+I+G+F','LG','HIVb+G+F','HIVb+I+G+F','MtREV+I+F','Blosum62+G+F','MtArt+I+F','JTT','Blosum62+I+G+F','Blosum62+I+F','CpREV+F','RtREV+G','HIVb+I+F','RtREV+I+G','CpREV+G','Blosum62+G','VT+G','RtREV+I','CpREV+I+G','Blosum62+I+G','VT+G+F','VT+I+G','CpREV+I','Blosum62+I','VT+I+G+F','VT+I','VT+I+F','MtMam+G+F','MtMam+I+G+F','Blosum62+F','MtREV+F','Blosum62','RtREV','MtMam+I+F','VT+F','VT','CpREV','MtArt+F','HIVb+F','HIVb+G','HIVb+I+G','HIVb+I','HIVw+G+F','HIVw+I+G+F','MtMam+F','HIVw+I+F','HIVb','MtREV+G','MtREV+I+G','MtArt+G','MtArt+I+G','MtREV+I','HIVw+F','MtArt+I','MtMam+G','MtMam+I+G','MtREV','HIVw+G','HIVw+I+G','MtMam+I','HIVw+I','MtArt','HIVw','MtMam']:
+        print 'Test ordering models: ERROR'
+        errors.append('ordering models')
+    else:
+        print 'Test ordering models: OK'
+    job_list = re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2)
+    if sorted(job_list.keys()) == sorted(['Dayhoff+G', 'DCMut+I+G', 'DCMut+G', 'Dayhoff+I+G']):
+        print 'Test better models: OK'
+    else:
+        print 'Test better models: ERROR'
+        errors.append('better models')
+    job_list, ord_aic = aic_calc(job_list, False)
+    if ord_aic == ['Dayhoff+G', 'DCMut+G', 'Dayhoff+I+G', 'DCMut+I+G']:
+        print 'Test ordering better models: OK'
+    else:
+        print 'Test ordering better models: ERROR'
+        errors.append('ordering better models')
+
+    expected = {'DCMut+G'    : 3389.69506,
+                'DCMut+I+G'  : 3391.46964,
+                'Dayhoff+G'  : 3389.14838,
+                'Dayhoff+I+G': 3390.92112}
+    for j in expected:
+        if not round(expected[j],2) == round(job_list[j]['AIC'],2):
+            print 'Test AIC values: ERROR'
+            errors.append('AIC values')
+            break
+    else:
+        print 'Test AIC values: OK'
+    
+    cmd = job_list[ord_aic[0]]['cmd']
+    cmd [cmd.index ('-b')+1] = '-4'
+    cmd += ['-s', 'BEST']
+    (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
+                       stdout=PIPE, shell=True).communicate()
+    tree = get_tree   (data + '_phyml_tree_%s.txt' % ord_aic[0])
+    print_model_estimations (parse_stats (data + '_phyml_stats_%s.txt' % ord_aic[0])[2])
+
+    expected_tree = '((human:0.0563158672,(rat:0.2056794657,rabbit:0.0839307491)0.7670000000:0.0369524233)0.6450000000:0.0289065340,marsupial:0.2993530194,cow:0.1082479462);\n'
+    expected_tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', expected_tree)
+    expected_tree = sub('(\))[0-9]+\.[0-9]*','\\1', expected_tree)
+    tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', tree)
+    tree = sub('(\))[0-9]+\.[0-9]*','\\1', tree)
+    if expected_tree == tree:
+        print 'Testing final topology: OK'
+    else:
+        print 'Testing final topology: ERROR'
+        errors.append('Different final trees')
+        print expected_tree
+        print tree
+
+    print '\n\n\n TEST PROTEIN FINISHED\n\n'
+    if errors:
+        print 'ERROR founds:'
+        for e in errors:
+            print e
+    
+    print '\n\nas last check, have a look to jmodeltest result in test folder:'
+    #print ''.join([l for l in open('test/prottest3_out.txt')])
+    
+    
+def main():
+    test_nt()
+    test_aa()
             
 if __name__ == "__main__":
     exit(main())

@@ -16,12 +16,14 @@ and ProtTest:
  Abascal F, Zardoya R, Posada D
  Bioinformatics21p2104-5(2005 May 1)
 
+WARNING: only working with phyml version: v3.0_360-500M
+         available at: http://www.atgc-montpellier.fr/phyml/
 """
 
 __author__  = "francois serra"
 __email__   = "francois@barrabin.org"
 __licence__ = "GPLv3"
-__version__ = "1.03"
+__version__ = "1.04"
 __title__   = "pmodeltest v%s" % __version__
 
 from argparse import ArgumentParser
@@ -163,7 +165,7 @@ def re_run(job_list, algt, cutoff=0.95, nprocs=1,refresh=2):
             del job_list[job]
     print >> STDOUT,  '\nREFINING...\n    doing the same but computing topologies' + \
                       ' only for models that sums a weight of 0.95\n\n    ' + \
-                      '\n'.join(job_list.keys()) + '\n'
+                      '\n    '.join(job_list.keys()) + '\n'
     job_list = run_jobs(job_list, nprocs=nprocs,refresh=refresh)
     return parse_jobs(job_list, algt)
     
@@ -402,7 +404,7 @@ models = {'nt':
            'RtREV'   ,
            'CpREV'   ,
            'VT'      ,
-           'Blosum62',
+           'BLOSUM2' ,
            'MtMam'   ,
            'MtArt'   ,
            'HIVw'    ,
@@ -449,7 +451,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'RtREV'    + ''  : ['RtREV'   , 0 ],
                        'CpREV'    + ''  : ['CpREV'   , 0 ],
                        'VT'       + ''  : ['VT'      , 0 ],
-                       'Blosum62' + ''  : ['Blosum62', 0 ],
+                       'BLOSUM2'  + ''  : ['Blosum62', 0 ],
                        'MtMam'    + ''  : ['MtMam'   , 0 ],
                        'MtArt'    + ''  : ['MtArt'   , 0 ],
                        'HIVw'     + ''  : ['HIVw'    , 0 ],
@@ -463,7 +465,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'RtREV'    + '+F': ['RtREV'   , 19],
                        'CpREV'    + '+F': ['CpREV'   , 19],
                        'VT'       + '+F': ['VT'      , 19],
-                       'Blosum62' + '+F': ['Blosum62', 19],
+                       'BLOSUM2'  + '+F': ['Blosum62', 19],
                        'MtMam'    + '+F': ['MtMam'   , 19],
                        'MtArt'    + '+F': ['MtArt'   , 19],
                        'HIVw'     + '+F': ['HIVw'    , 19],
