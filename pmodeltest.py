@@ -24,7 +24,7 @@ __licence__ = "GPLv3"
 __version__ = "1.03"
 __title__   = "pmodeltest v%s" % __version__
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 from re import sub
 from sys import stderr as STDERR
@@ -32,8 +32,8 @@ from sys import stdout as STDOUT
 from cmath import exp
 from time import sleep
 
-def get_job_list(algt, wanted_models, speed, verb, protein,
-              support, sequential=True, rerun=False):
+def get_job_list(algt, wanted_models, speed=True, verbose=False, protein=False,
+              support=False, sequential=False, rerun=False):
     '''
     runs a list of models and returns a dictionary of results.
     If rerun is True, will have into account +I+G information
@@ -64,6 +64,9 @@ def get_job_list(algt, wanted_models, speed, verb, protein,
                         'params': model_param + int (opt=='tl') + (inv != '') + (gam != ''),
                         'algt': algt
                     }
+    if verbose:
+        for job in job_list:
+            print job + ': ' + ' '.join(job_list[job]['cmd'])
     return job_list
 
 def run_jobs(job_list, nprocs=1, refresh=2):
@@ -182,13 +185,13 @@ def main():
     # first run of models
     results = get_job_list(opts.algt, opts.models, opts.speedy, opts.verb,
                            opts.protein, opts.support, sequential=opts.sequential)
-    results = run_jobs(results,nprocs=2,refresh=0.5)
+    results = run_jobs(results,nprocs=opts.nprocs,refresh=opts.refresh)
     results = parse_jobs(results, opts.algt)
     results, ord_aic = aic_calc(results, opts.speedy)
 
     # if bit fast, second run with wanted models (that sums weight of 0.95)
     if opts.medium:
-        results = re_run(results, opts.algt, cutoff=0.95, refresh=0.5, nprocs=2)
+        results = re_run(results, opts.algt, cutoff=0.95, refresh=opts.refresh, nprocs=opts.nprocs)
         results, ord_aic = aic_calc(results, False)
 
     print >> STDOUT,  '\n\n*************************************************'
@@ -288,16 +291,6 @@ def get_options():
     '''
     parse option from command line call
     '''
-    parser = OptionParser(
-        version=__title__,
-        usage="%prog [options] file [options [file ...]]",
-        description="""\
-Reads sequences from file fasta format, and align according to translation.                                      
-.                                                                           .
-********************************************                                            
-"""
-        )
-
     model_list = {'dna': ['JC', 'K80', 'TrNef', 'TPM1', 'TPM2', 'TPM3',
                           'TIM1ef', 'TIM2ef', 'TIM3ef', 'TVMef', 'SYM',
                           'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
@@ -305,68 +298,76 @@ Reads sequences from file fasta format, and align according to translation.
                   'aa' :  ['LG', 'WAG', 'JTT', 'MtREV', 'Dayhoff', 'DCMut',
                            'RtREV', 'CpREV', 'VT', 'Blosum62', 'MtMam',
                            'MtArt', 'HIVw', 'HIVb'] }
-    parser.add_option('-i', dest='algt', metavar="PATH", \
-                      help='path to input file in phylip format')
-    parser.add_option('-o', dest='outfile', metavar="PATH", \
-                      help='name of outfile tree (newick format)')
-    parser.add_option('-O', dest='outtrees', metavar="PATH", \
-                      help='name of outfile with all trees (newick format)')
-    parser.add_option('--support', action='store_true', \
-                      dest='support', default=False, \
-                      help='[%default] compute SH-like branch support for each model (slower).')
-    parser.add_option('--fast', action='store_true', \
-                      dest='speedy', default=False, \
-                      help='[%default] Do not do topology optimization.')
-    parser.add_option('--protein', action='store_true', \
-                      dest='protein', default=False, \
-                      help='[%default] working with amino-acid sequences.')
-    parser.add_option('--sequential', action='store_true', \
-                      dest='sequential', default=False, \
-                      help='[%default] Phylip sequential format.')
-    parser.add_option('--bitfast', action='store_true', \
-                      dest='medium', default=False, \
-                      help=\
-                      '''[%default] Same as fast, but reruns models with
-                      topology optimization for best models (the ones with
-                      cumulative weight => 0.95)''')
-    parser.add_option('--noinv', action='store_true', \
-                      dest='noinv', default=False, \
-                      help='[%default] Do not check for invariant sites.')
-    parser.add_option('--nogam', action='store_true', \
-                      dest='nogam', default=False, \
-                      help='[%default] Do not check for gamma distribution.')
-    parser.add_option('--nofrq', action='store_true', \
-                      dest='nofrq', default=False, \
-                      help='[%default] Do not check for differences in rate frequencies.')
-    parser.add_option('--verbose', action='store_true', \
-                      dest='verb', default=False, \
-                      help=\
-                      '''[%default] Displays information about PhyML command
-                      line.''')
-    parser.add_option('-m', metavar='LIST',
-                      dest='models',
-                      default=(' '*80).join([ m  +': ' + \
-                                              ','.join (model_list[m]) \
-                                              for m in model_list ]),
-                      help=\
-                      '''[%default] DNA/AA models.                            
-                      e.g.: -m "JC,TrN,GTR"
-                      ''')
-    opts = parser.parse_args()[0]
+    class Choose_model(list):
+        def __init__(self,vals):
+            self.vals = reduce(lambda x,y:x+y, vals)
+        def __contains__(self,x):
+            return all ([True if i in self.vals else False for i in x.split(',')])
+        def __iter__(self):
+            return self.vals.__iter__()
+    choose_model = Choose_model(model_list.values())
+    parser = ArgumentParser(
+        version=__title__,
+        description="""Reads sequences from file fasta format, and align according to translation.
+        DNA models availabe are: %s.
+        AA models available are: %s""" % (','.join(model_list['dna']), ','.join(model_list['aa'])))
+    parser.add_argument('-i', dest='algt', type=str, required=True,
+                        help='path to input file in phylip format')
+    parser.add_argument('-o', dest='outfile', type=str, 
+                        help='name of outfile tree (newick format)')
+    parser.add_argument('-O', dest='outtrees', metavar="PATH",
+                        help='name of outfile with all trees (newick format)')
+    parser.add_argument('--support', action='store_true',
+                        dest='support', default=False,
+                        help='[%(default)s] compute SH-like branch support for each model (slower).')
+    parser.add_argument('--fast', action='store_true',
+                        dest='speedy', default=False,
+                        help='[%(default)s] Do not do topology optimization.')
+    parser.add_argument('--protein', action='store_true',
+                        dest='protein', default=False,
+                        help='[%(default)s] working with amino-acid sequences.')
+    parser.add_argument('--sequential', action='store_true',
+                        dest='sequential', default=False,
+                        help='[%(default)s] Phylip sequential format.')
+    parser.add_argument('--bitfast', action='store_true',
+                        dest='medium', default=False,
+                        help=\
+                        '''[%(default)s] Same as fast, but reruns models with
+                        topology optimization for best models (the ones with
+                        cumulative weight => 0.95)''')
+    parser.add_argument('--noinv', action='store_true',
+                        dest='noinv', default=False,
+                        help='[%(default)s] Do not check for invariant sites.')
+    parser.add_argument('--nogam', action='store_true',
+                        dest='nogam', default=False,
+                        help='[%(default)s] Do not check for gamma distribution.')
+    parser.add_argument('--nofrq', action='store_true',
+                        dest='nofrq', default=False,
+                        help='[%(default)s] Do not check for differences in rate frequencies.')
+    parser.add_argument('--nprocs', metavar='INT',
+                        dest='nprocs', default=2,
+                        help='[%(default)s] Number of CPUs to use.')
+    parser.add_argument('--sleep', metavar='FLOAT',
+                        dest='refresh', default=0.1,
+                        help='[%(default)s] Refresh rate in seconds.')
+    parser.add_argument('--verbose', action='store_true',
+                        dest='verb', default=False,
+                        help='[%(default)s] Displays information about PhyML command line.')
+    parser.add_argument('-m', metavar='LIST',
+                        dest='models',
+                        default='all',
+                        choices=choose_model,
+                        help= '[%(default)s] DNA/AA models. e.g.: -m "JC,TrN,GTR"')
+    opts = parser.parse_args()
     typ = 'aa' if opts.protein else 'dna'
     if not opts.algt:
         exit(parser.print_help())
     if opts.medium:
         opts.speedy = True
-    if opts.models == (' '*80).join([ m  +': ' + ','.join(model_list[m]) \
-                                      for m in model_list ]):
-        opts.models = ','.join (model_list[typ])
-    if len (set (opts.models.split(',')) - set (model_list[typ])) > 0:
-        print >> STDERR, 'ERROR: those models are not in list of ' + \
-              'allowed models: \n   '+ \
-               ', '.join (list (set (opts.models.split(',')) - \
-                                set (model_list[typ]))) + '\n\n'
-        exit(parser.print_help())
+    if opts.models == 'all':
+        opts.models = model_list[typ]
+    else:
+        opts.models = opts.models.split(',')
     return opts
 
 
@@ -414,7 +415,7 @@ freqs = {'nt': {'': ['-f', '0.25,0.25,0.25,0.25'], '+F': ['-f', 'm']},
 
 invts = {'': ['-v', '0'], '+I': ['-v', 'e']}
 
-gamma = {'': ['-c', '1', '-a', '1.0'], '+G': ['-c', '4', '-a', 'e']}
+gamma = {'': ['-c', '1'], '+G': ['-c', '4', '-a', 'e']}
 
 # phyml model names, real names, and number of extra parameters
 modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
