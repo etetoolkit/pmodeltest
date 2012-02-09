@@ -17,16 +17,19 @@ def test_nt():
               'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
               'TIM1', 'TIM2', 'TIM3', 'TVM', 'GTR']
     job_list = get_job_list(data, models, speed=True, protein=False,
-                            support=False, verbose=True)
+                            support=False, verbose=False)
     job_list = run_jobs(job_list, nprocs=2, refresh=0.01)
     job_list = parse_jobs(job_list, data)
-    job_list, ord_aic = aic_calc(job_list, True)
+    clean_all (job_list, data)
+    job_list, ord_aic = aic_calc(job_list, True, verbose=False)
     if not ord_aic == ["TPM1uf+G+F","TPM3uf+G+F","TIM1+G+F","TPM1uf+I+G+F","TIM3+G+F","HKY+G+F","TPM3uf+I+G+F","TVM+G+F","TIM1+I+G+F","TrN+G+F","TIM3+I+G+F","HKY+I+G+F","TPM2uf+G+F","GTR+G+F","TVM+I+G+F","TPM1uf+I+F","TPM3uf+I+F","TrN+I+G+F","TIM2+G+F","TPM2uf+I+G+F","GTR+I+G+F","TIM1+I+F","TIM3+I+F","HKY+I+F","TIM2+I+G+F","TVM+I+F","TrN+I+F","TPM2uf+I+F","GTR+I+F","TIM2+I+F","TPM3uf+F","TPM1uf+F","HKY+F","TIM3+F","TIM1+F","TVM+F","TrN+F","TPM2uf+F","GTR+F","TIM2+F","F81+G+F","F81+I+G+F","SYM+G","SYM+I+G","F81+I+F","TVMef+G","TVMef+I+G","SYM+I","TIM2ef+G","TIM2ef+I+G","TVMef+I","TPM2+G","TPM2+I+G","TIM3ef+G","TIM2ef+I","TIM1ef+G","TIM3ef+I+G","TIM1ef+I+G","TPM2+I","TPM3+G","TPM1+G","TIM3ef+I","TPM3+I+G","TPM1+I+G","TIM1ef+I","TrNef+G","TrNef+I+G","TPM3+I","TPM1+I","K80+G","TrNef+I","K80+I+G","K80+I","F81+F","SYM","TIM2ef","TVMef","TIM3ef","TIM1ef","TPM2","TrNef","TPM3","TPM1","K80","JC+G","JC+I+G","JC+I","JC"]:
         print 'Test ordering models: ERROR'
         errors.append('ordering models')
     else:
         print 'Test ordering models: OK'
-    job_list = re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2)
+    job_list = re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2, verbose=True)
+    job_list = parse_jobs(job_list, data)
+    clean_all (job_list, data) 
     if sorted(job_list.keys()) == sorted(["TIM3+G+F","TrN+I+G+F","TPM3uf+I+F","TIM1+G+F","GTR+G+F","TPM1uf+I+F","TPM3uf+I+G+F","TVM+G+F","TrN+G+F","TPM1uf+G+F","TPM2uf+G+F","TVM+I+G+F","HKY+I+G+F","TIM1+I+G+F","TPM3uf+G+F","TIM3+I+G+F","TPM1uf+I+G+F","HKY+G+F"]):
         print 'Test better models: OK'
     else:
@@ -65,14 +68,11 @@ def test_nt():
             break
     else:
         print 'Test AIC values: OK'
-    
-    cmd = job_list[ord_aic[0]]['cmd']
-    cmd [cmd.index ('-b')+1] = '-4'
-    cmd += ['-s', 'BEST']
-    (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
-                       stdout=PIPE, shell=True).communicate()
-    tree = get_tree   (data + '_phyml_tree_%s.txt' % ord_aic[0])
-    print_model_estimations (parse_stats (data + '_phyml_stats_%s.txt' % ord_aic[0])[2])
+
+
+    tree = re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True) 
+    job_list = parse_jobs({ord_aic[0]: job_list[ord_aic[0]]}, data)
+    clean_all ({ord_aic[0]: job_list[ord_aic[0]]}, data)
     
     expected_tree = '((((((Macaca_mulatta:0.0117313526,(Alouata_seniculus:0.0190656000,(Pongo_pygmaeus_old_3:0.0030481589,Gorilla_gorilla:0.0020294397)0.9770000000:0.0075362735)0.0000000000:0.0004306512)0.9960000000:0.0172550253,Pan_troglodytes:0.0223821735)0.8640000000:0.0093079991,Trachypithecus_johnii:0.0229373226)1.0000000000:0.0776907115,Procolobus_badius:0.1966057310)0.9970000000:0.0650031999,Trachypithecus_geii:0.0048258029)0.8290000000:0.0030733844,Semnopithecus_entellus:0.0052455542,Callithrix_jacchus:0.0081475480);\n'
     expected_tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', expected_tree)
@@ -93,7 +93,7 @@ def test_nt():
         for e in errors:
             print e
 
-    print '\n\nas last check, have a look to jmodeltest result in test folder:'
+    print '\n\nas last check, have a look to jmodeltest result in test folder'
     #print ''.join([l for l in open('test/jmodeltest0.1_out.txt')])
 
 def test_aa():
@@ -106,13 +106,16 @@ def test_aa():
                             support=False)
     job_list = run_jobs(job_list, nprocs=2, refresh=0.01)
     job_list = parse_jobs(job_list, data)
+    clean_all (job_list, data)
     job_list, ord_aic = aic_calc(job_list, True)
     if not ord_aic == ['Dayhoff+G','DCMut+G','Dayhoff+I+G','DCMut+I+G','Dayhoff+I','DCMut+I','Dayhoff+G+F','DCMut+G+F','LG+G+F','Dayhoff+I+G+F','DCMut+I+G+F','LG+I+G+F','Dayhoff+I+F','DCMut+I+F','LG+I+F','WAG+G','WAG+I+G','WAG+I','Dayhoff','DCMut','WAG+G+F','RtREV+G+F','LG+G','WAG+I+G+F','WAG+I+F','RtREV+I+G+F','LG+I+G','RtREV+I+F','JTT+G+F','JTT+I+G+F','LG+I','JTT+I+F','JTT+G','JTT+I+G','Dayhoff+F','DCMut+F','CpREV+G+F','LG+F','JTT+I','CpREV+I+G+F','CpREV+I+F','WAG','WAG+F','MtArt+G+F','MtArt+I+G+F','RtREV+F','MtREV+G+F','JTT+F','MtREV+I+G+F','LG','HIVb+G+F','HIVb+I+G+F','MtREV+I+F','Blosum62+G+F','MtArt+I+F','JTT','Blosum62+I+G+F','Blosum62+I+F','CpREV+F','RtREV+G','HIVb+I+F','RtREV+I+G','CpREV+G','Blosum62+G','VT+G','RtREV+I','CpREV+I+G','Blosum62+I+G','VT+G+F','VT+I+G','CpREV+I','Blosum62+I','VT+I+G+F','VT+I','VT+I+F','MtMam+G+F','MtMam+I+G+F','Blosum62+F','MtREV+F','Blosum62','RtREV','MtMam+I+F','VT+F','VT','CpREV','MtArt+F','HIVb+F','HIVb+G','HIVb+I+G','HIVb+I','HIVw+G+F','HIVw+I+G+F','MtMam+F','HIVw+I+F','HIVb','MtREV+G','MtREV+I+G','MtArt+G','MtArt+I+G','MtREV+I','HIVw+F','MtArt+I','MtMam+G','MtMam+I+G','MtREV','HIVw+G','HIVw+I+G','MtMam+I','HIVw+I','MtArt','HIVw','MtMam']:
         print 'Test ordering models: ERROR'
         errors.append('ordering models')
     else:
         print 'Test ordering models: OK'
-    job_list = re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2)
+    job_list = re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2, verbose=True)
+    job_list = parse_jobs(job_list, data)
+    clean_all (job_list, data)
     if sorted(job_list.keys()) == sorted(['Dayhoff+G', 'DCMut+I+G', 'DCMut+G', 'Dayhoff+I+G']):
         print 'Test better models: OK'
     else:
@@ -137,13 +140,8 @@ def test_aa():
     else:
         print 'Test AIC values: OK'
     
-    cmd = job_list[ord_aic[0]]['cmd']
-    cmd [cmd.index ('-b')+1] = '-4'
-    cmd += ['-s', 'BEST']
-    (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
-                       stdout=PIPE, shell=True).communicate()
-    tree = get_tree   (data + '_phyml_tree_%s.txt' % ord_aic[0])
-    print_model_estimations (parse_stats (data + '_phyml_stats_%s.txt' % ord_aic[0])[2])
+    tree = re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True)
+    clean_all ({ord_aic[0]: job_list[ord_aic[0]]}, data)
 
     expected_tree = '((human:0.0563158672,(rat:0.2056794657,rabbit:0.0839307491)0.7670000000:0.0369524233)0.6450000000:0.0289065340,marsupial:0.2993530194,cow:0.1082479462);\n'
     expected_tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', expected_tree)
@@ -164,7 +162,7 @@ def test_aa():
         for e in errors:
             print e
     
-    print '\n\nas last check, have a look to jmodeltest result in test folder:'
+    print '\n\nas last check, have a look to jmodeltest result in test folder'
     #print ''.join([l for l in open('test/prottest3_out.txt')])
     
     
