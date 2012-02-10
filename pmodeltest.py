@@ -45,6 +45,8 @@ def main():
     infile must be in phylip format.
     '''
     opts = get_options()
+    global PHYML
+    PHYML = opts.PHYML
     # remove gamma inv and frequencies if not wanted
     if opts.nogam:
         del gamma ['+G']
@@ -98,7 +100,7 @@ def get_job_list(algt, wanted_models, speed=True, verbose=False, protein=False,
     If rerun is True, will have into account +I+G information
     and only run the wanted ones.
     '''
-    opt = 'l'  if speed   else 'tl'
+    opt = 'lr'  if speed   else 'tlr'
     sup = '-4' if support else '0'
     typ = 'aa' if protein else 'nt'
     job_list = {}
@@ -244,7 +246,7 @@ def re_run_best(better,cmd, algt, verbose=True):
         print >> STDOUT,\
         'Re-run of best model with computation of rates and support...'
 
-    cmd[cmd.index ('-o') + 1] += 'r'
+    #cmd[cmd.index ('-o') + 1] += 'r'
     # add best tree search and support to phyml command line
     cmd [cmd.index ('-b')+1] = '-4'
     cmd += ['-s', 'BEST']
@@ -457,7 +459,7 @@ models = {'nt':
            'RtREV'   ,
            'CpREV'   ,
            'VT'      ,
-           'BLOSUM2' ,
+           'Blosum62' ,
            'MtMam'   ,
            'MtArt'   ,
            'HIVw'    ,
@@ -504,7 +506,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'RtREV'    + ''  : ['RtREV'   , 0 ],
                        'CpREV'    + ''  : ['CpREV'   , 0 ],
                        'VT'       + ''  : ['VT'      , 0 ],
-                       'BLOSUM2'  + ''  : ['Blosum62', 0 ],
+                       'Blosum62' + ''  : ['Blosum62', 0 ],
                        'MtMam'    + ''  : ['MtMam'   , 0 ],
                        'MtArt'    + ''  : ['MtArt'   , 0 ],
                        'HIVw'     + ''  : ['HIVw'    , 0 ],
@@ -518,7 +520,7 @@ modelnames = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'RtREV'    + '+F': ['RtREV'   , 19],
                        'CpREV'    + '+F': ['CpREV'   , 19],
                        'VT'       + '+F': ['VT'      , 19],
-                       'BLOSUM2'  + '+F': ['Blosum62', 19],
+                       'Blosum62' + '+F': ['Blosum62', 19],
                        'MtMam'    + '+F': ['MtMam'   , 19],
                        'MtArt'    + '+F': ['MtArt'   , 19],
                        'HIVw'     + '+F': ['HIVw'    , 19],
