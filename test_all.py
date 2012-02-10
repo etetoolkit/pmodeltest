@@ -19,7 +19,7 @@ def test_nt():
               'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
               'TIM1', 'TIM2', 'TIM3', 'TVM', 'GTR']
     job_list = pmt.get_job_list(data, models, speed=True, protein=False,
-                            support=False, verbose=False)
+                            verbose=False)
     job_list = pmt.run_jobs(job_list, nprocs=2, refresh=0.01)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
@@ -133,7 +133,7 @@ def test_aa():
               'RtREV', 'CpREV', 'VT', 'Blosum62', 'MtMam',
               'MtArt', 'HIVw', 'HIVb']
     job_list = pmt.get_job_list(data, models, speed=True, protein=True,
-                            support=False, verbose=False) # here verbose prints all command lines
+                            verbose=False) # here verbose prints all command lines
     job_list = pmt.run_jobs(job_list, nprocs=2, refresh=0.01)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
