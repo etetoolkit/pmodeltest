@@ -18,8 +18,8 @@ and ProtTest:
  Abascal F, Zardoya R, Posada D
  Bioinformatics21p2104-5(2005 May 1)
 
-WARNING: only working with phyml version: v3.0_360-500M
-         available at: http://www.atgc-montpellier.fr/phyml/
+WARNING: use phyml version: 20110919
+         available at: http://code.google.com/p/phyml/
 
 
 BEFORE ALL, test:
