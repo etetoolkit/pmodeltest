@@ -1,12 +1,32 @@
-###  README --- /home/francisco/Box/utils/pmodeltest/
+###  README --- pmodeltest/
 
 ## Copyright 2011 Francois Serra
 ##
-## Author: francisco@evolution
 ## Keywords: Phylogeny modeltest model selection AIC Akaike
 
-Usage:
-./pmodeltest -i example/protein.phy [-o tree] [-O trees] [running options]
+Tests evolutionary models like jModelTest but also for proteins.
+'bitfast' option allows to run topology optimization on most weighted models.
+Return 'best' tree with SH branch support value.
 
+All based on the behavior of jModelTest:
+ jModelTest: phylogenetic model averaging.
+ Posada D
+ Mol Biol Evol25p1253-6(2008 Jul)
+
+and ProtTest:
+ ProtTest: selection of best-fit models of protein evolution.
+ Abascal F, Zardoya R, Posada D
+ Bioinformatics21p2104-5(2005 May 1)
+
+WARNING: use phyml version: 20110919
+         available at: http://code.google.com/p/phyml/
+
+
+BEFORE ALL, test:
+python test_all.py
+
+
+Usage:
+python pmodeltest.py -i example/protein.phy [-o tree] [-O trees] [running options]
 
 

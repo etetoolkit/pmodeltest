@@ -1,0 +1,1755 @@
+----------------------------- jModeltest 0.1.1 -----------------------------
+(c) 2008 David Posada, Department of Biochemistry, Genetics and Immunology
+University of Vigo, 36310 Vigo, Spain. e-mail: dposada@uvigo.es
+--------------------------------------------------------------------------
+Thu Feb 09 12:40:31 CET 2012  (Linux 3.0.0-16-generic, arch: amd64)
+
+
+******************************* NOTICE ************************************
+This program may contain errors. Please inspect the results carefully.
+***************************************************************************
+
+
+Arguments = -d dna.phy -s 11 -f -i -g 4 -AIC -t BIONJ
+
+Reading data file "dna.phy"... OK.
+  number of sequences: 10
+  number of sites: 1000
+
+
+---------------------------------------------------------------
+*                                                             *
+*        COMPUTATION OF LIKELIHOOD SCORES WITH PHYML          *
+*                                                             *
+---------------------------------------------------------------
+
+Settings:
+ Phyml version = 3.0
+ Candidate models = 88
+  number of substitution schemes = 11
+  including models with equal/unequal base frequencies (+F)
+  including models with/without a proportion of invariable sites (+I)
+  including models with/without rate variation among sites (+G) (nCat = 4)
+ Optimized free parameters (K) = substitution parameters + 17 branch lengths
+ Base tree for likelihood calculations = BIONJ tree
+
+Maximum likelihod estimation for the JC model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = JC
+   partition = 000000
+   -lnL = 3252.8601
+   K = 17
+  Computation time = 00h:00:00:01  (00h:00:00:01)
+
+Maximum likelihod estimation for the JC+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = JC+I
+   partition = 000000
+   -lnL = 3233.7976
+   K = 18
+   p-inv = 0.4740
+  Computation time = 00h:00:00:02  (00h:00:00:03)
+
+Maximum likelihod estimation for the JC+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = JC+G
+   partition = 000000
+   -lnL = 3231.4542
+   K = 18
+   gamma shape = 0.5490
+  Computation time = 00h:00:00:04  (00h:00:00:08)
+
+Maximum likelihod estimation for the JC+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = JC+I+G
+   partition = 000000
+   -lnL = 3231.4071
+   K = 19
+   p-inv = 0.1520
+   gamma shape = 0.8170
+  Computation time = 00h:00:03:00  (00h:00:03:07)
+
+Maximum likelihod estimation for the F81 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f e -o l
+ExitValue: 0
+   Model = F81
+   partition = 000000
+   -lnL = 3142.8679
+   K = 20
+   freqA = 0.3781 
+   freqC = 0.2127 
+   freqG = 0.1169 
+   freqT = 0.2923 
+  Computation time = 00h:00:00:01  (00h:00:03:08)
+
+Maximum likelihod estimation for the F81+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f e -v e -o l
+ExitValue: 0
+   Model = F81+I
+   partition = 000000
+   -lnL = 3125.1380
+   K = 21
+   freqA = 0.3755 
+   freqC = 0.2137 
+   freqG = 0.1170 
+   freqT = 0.2938 
+   p-inv = 0.4600
+  Computation time = 00h:00:00:03  (00h:00:04:02)
+
+Maximum likelihod estimation for the F81+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = F81+G
+   partition = 000000
+   -lnL = 3122.9502
+   K = 21
+   freqA = 0.3753 
+   freqC = 0.2138 
+   freqG = 0.1169 
+   freqT = 0.2940 
+   gamma shape = 0.5830
+  Computation time = 00h:00:00:03  (00h:00:04:05)
+
+Maximum likelihod estimation for the F81+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 000000 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = F81+I+G
+   partition = 000000
+   -lnL = 3122.9118
+   K = 22
+   freqA = 0.3751 
+   freqC = 0.2139 
+   freqG = 0.1169 
+   freqT = 0.2941 
+   p-inv = 0.1280
+   gamma shape = 0.8150
+  Computation time = 00h:00:04:08  (00h:00:09:03)
+
+Maximum likelihod estimation for the K80 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = K80
+   partition = 010010
+   -lnL = 3164.1938
+   K = 18
+   kappa = 4.4790 (ti/tv = 2.2395)
+  Computation time = 00h:00:00:01  (00h:00:09:04)
+
+Maximum likelihod estimation for the K80+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = K80+I
+   partition = 010010
+   -lnL = 3140.8670
+   K = 19
+   kappa = 5.0344 (ti/tv = 2.5172)
+   p-inv = 0.5050
+  Computation time = 00h:00:00:02  (00h:00:09:06)
+
+Maximum likelihod estimation for the K80+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = K80+G
+   partition = 010010
+   -lnL = 3138.3333
+   K = 19
+   kappa = 5.0738 (ti/tv = 2.5369)
+   gamma shape = 0.4580
+  Computation time = 00h:00:00:03  (00h:00:09:08)
+
+Maximum likelihod estimation for the K80+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = K80+I+G
+   partition = 010010
+   -lnL = 3138.2086
+   K = 20
+   kappa = 5.0911 (ti/tv = 2.5455)
+   p-inv = 0.1960
+   gamma shape = 0.7610
+  Computation time = 00h:00:01:07  (00h:00:11:06)
+
+Maximum likelihod estimation for the HKY model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f e -o l
+ExitValue: 0
+   Model = HKY
+   partition = 010010
+   -lnL = 3025.8837
+   K = 21
+   freqA = 0.4005 
+   freqC = 0.2034 
+   freqG = 0.1064 
+   freqT = 0.2897 
+   kappa = 5.6913 (ti/tv = 2.3119)
+  Computation time = 00h:00:00:02  (00h:00:11:07)
+
+Maximum likelihod estimation for the HKY+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f e -v e -o l
+ExitValue: 0
+   Model = HKY+I
+   partition = 010010
+   -lnL = 3004.5675
+   K = 22
+   freqA = 0.4009 
+   freqC = 0.2031 
+   freqG = 0.1060 
+   freqT = 0.2900 
+   kappa = 6.4736 (ti/tv = 2.6261)
+   p-inv = 0.4670
+  Computation time = 00h:00:00:03  (00h:00:12:01)
+
+Maximum likelihod estimation for the HKY+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = HKY+G
+   partition = 010010
+   -lnL = 3002.3210
+   K = 22
+   freqA = 0.4008 
+   freqC = 0.2030 
+   freqG = 0.1061 
+   freqT = 0.2901 
+   kappa = 6.5633 (ti/tv = 2.6626)
+   gamma shape = 0.5240
+  Computation time = 00h:00:00:06  (00h:00:12:06)
+
+Maximum likelihod estimation for the HKY+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010010 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = HKY+I+G
+   partition = 010010
+   -lnL = 3002.2474
+   K = 23
+   freqA = 0.4009 
+   freqC = 0.2031 
+   freqG = 0.1060 
+   freqT = 0.2900 
+   kappa = 6.5823 (ti/tv = 2.6703)
+   p-inv = 0.1820
+   gamma shape = 0.8530
+  Computation time = 00h:00:02:08  (00h:00:15:05)
+
+Maximum likelihod estimation for the TrNef model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TrNef
+   partition = 010020
+   -lnL = 3160.1491
+   K = 19
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  3.6389
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  5.3195
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:15:06)
+
+Maximum likelihod estimation for the TrNef+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TrNef+I
+   partition = 010020
+   -lnL = 3138.0036
+   K = 20
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  4.0650
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  5.9575
+   R(f) [GT] =  1.0000
+   p-inv = 0.4950
+  Computation time = 00h:00:00:02  (00h:00:15:08)
+
+Maximum likelihod estimation for the TrNef+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TrNef+G
+   partition = 010020
+   -lnL = 3135.4327
+   K = 20
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  4.0873
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.0343
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4780
+  Computation time = 00h:00:00:03  (00h:00:16:01)
+
+Maximum likelihod estimation for the TrNef+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TrNef+I+G
+   partition = 010020
+   -lnL = 3135.3392
+   K = 21
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  4.1038
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.0518
+   R(f) [GT] =  1.0000
+   p-inv = 0.1890
+   gamma shape = 0.7800
+  Computation time = 00h:00:02:00  (00h:00:18:00)
+
+Maximum likelihod estimation for the TrN model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f e -o l
+ExitValue: 0
+   Model = TrN
+   partition = 010020
+   -lnL = 3025.8122
+   K = 22
+   freqA = 0.3993 
+   freqC = 0.2045 
+   freqG = 0.1054 
+   freqT = 0.2909 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  5.8888
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  5.5603
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:18:02)
+
+Maximum likelihod estimation for the TrN+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f e -v e -o l
+ExitValue: 0
+   Model = TrN+I
+   partition = 010020
+   -lnL = 3004.4404
+   K = 23
+   freqA = 0.3994 
+   freqC = 0.2044 
+   freqG = 0.1047 
+   freqT = 0.2915 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.8295
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.2408
+   R(f) [GT] =  1.0000
+   p-inv = 0.4670
+  Computation time = 00h:00:00:04  (00h:00:18:06)
+
+Maximum likelihod estimation for the TrN+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TrN+G
+   partition = 010020
+   -lnL = 3002.1676
+   K = 23
+   freqA = 0.3992 
+   freqC = 0.2045 
+   freqG = 0.1045 
+   freqT = 0.2918 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.9776
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.2998
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5230
+  Computation time = 00h:00:00:06  (00h:00:19:02)
+
+Maximum likelihod estimation for the TrN+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010020 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TrN+I+G
+   partition = 010020
+   -lnL = 3002.0882
+   K = 24
+   freqA = 0.3992 
+   freqC = 0.2046 
+   freqG = 0.1045 
+   freqT = 0.2918 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  7.0060
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.3106
+   R(f) [GT] =  1.0000
+   p-inv = 0.1740
+   gamma shape = 0.8330
+  Computation time = 00h:00:03:05  (00h:00:22:07)
+
+Maximum likelihod estimation for the TPM1 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TPM1
+   partition = 012210
+   -lnL = 3160.5442
+   K = 19
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.3660
+   R(c) [AT] =  1.8345
+   R(d) [CG] =  1.8345
+   R(e) [CT] =  6.3660
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:22:08)
+
+Maximum likelihod estimation for the TPM1+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TPM1+I
+   partition = 012210
+   -lnL = 3136.8668
+   K = 20
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  7.8160
+   R(c) [AT] =  2.0906
+   R(d) [CG] =  2.0906
+   R(e) [CT] =  7.8160
+   R(f) [GT] =  1.0000
+   p-inv = 0.5070
+  Computation time = 00h:00:00:02  (00h:00:23:00)
+
+Maximum likelihod estimation for the TPM1+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM1+G
+   partition = 012210
+   -lnL = 3133.9887
+   K = 20
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  8.1211
+   R(c) [AT] =  2.1770
+   R(d) [CG] =  2.1770
+   R(e) [CT] =  8.1211
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4500
+  Computation time = 00h:00:00:04  (00h:00:23:03)
+
+Maximum likelihod estimation for the TPM1+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM1+I+G
+   partition = 012210
+   -lnL = 3133.8398
+   K = 21
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  8.1747
+   R(c) [AT] =  2.1869
+   R(d) [CG] =  2.1869
+   R(e) [CT] =  8.1747
+   R(f) [GT] =  1.0000
+   p-inv = 0.1800
+   gamma shape = 0.7060
+  Computation time = 00h:00:02:00  (00h:00:25:03)
+
+Maximum likelihod estimation for the TPM1uf model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f e -o l
+ExitValue: 0
+   Model = TPM1uf
+   partition = 012210
+   -lnL = 3024.4477
+   K = 22
+   freqA = 0.4004 
+   freqC = 0.2051 
+   freqG = 0.1067 
+   freqT = 0.2878 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  7.1687
+   R(c) [AT] =  1.4718
+   R(d) [CG] =  1.4718
+   R(e) [CT] =  7.1687
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:25:05)
+
+Maximum likelihod estimation for the TPM1uf+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f e -v e -o l
+ExitValue: 0
+   Model = TPM1uf+I
+   partition = 012210
+   -lnL = 3002.6760
+   K = 23
+   freqA = 0.4007 
+   freqC = 0.2057 
+   freqG = 0.1064 
+   freqT = 0.2872 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  8.8926
+   R(c) [AT] =  1.6765
+   R(d) [CG] =  1.6765
+   R(e) [CT] =  8.8926
+   R(f) [GT] =  1.0000
+   p-inv = 0.4730
+  Computation time = 00h:00:00:03  (00h:00:25:08)
+
+Maximum likelihod estimation for the TPM1uf+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM1uf+G
+   partition = 012210
+   -lnL = 3000.2201
+   K = 23
+   freqA = 0.4007 
+   freqC = 0.2058 
+   freqG = 0.1065 
+   freqT = 0.2871 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.2320
+   R(c) [AT] =  1.7356
+   R(d) [CG] =  1.7356
+   R(e) [CT] =  9.2320
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5090
+  Computation time = 00h:00:00:06  (00h:00:26:05)
+
+Maximum likelihod estimation for the TPM1uf+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012210 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM1uf+I+G
+   partition = 012210
+   -lnL = 3000.1348
+   K = 24
+   freqA = 0.4006 
+   freqC = 0.2059 
+   freqG = 0.1065 
+   freqT = 0.2870 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.2832
+   R(c) [AT] =  1.7422
+   R(d) [CG] =  1.7422
+   R(e) [CT] =  9.2832
+   R(f) [GT] =  1.0000
+   p-inv = 0.1690
+   gamma shape = 0.7910
+  Computation time = 00h:00:03:00  (00h:00:29:04)
+
+Maximum likelihod estimation for the TPM2 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TPM2
+   partition = 010212
+   -lnL = 3158.8813
+   K = 19
+   R(a) [AC] =  2.1907
+   R(b) [AG] =  7.9608
+   R(c) [AT] =  2.1907
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  7.9608
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:29:05)
+
+Maximum likelihod estimation for the TPM2+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TPM2+I
+   partition = 010212
+   -lnL = 3133.1900
+   K = 20
+   R(a) [AC] =  2.8735
+   R(b) [AG] =  10.8465
+   R(c) [AT] =  2.8735
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  10.8465
+   R(f) [GT] =  1.0000
+   p-inv = 0.5200
+  Computation time = 00h:00:00:02  (00h:00:29:07)
+
+Maximum likelihod estimation for the TPM2+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM2+G
+   partition = 010212
+   -lnL = 3130.4302
+   K = 20
+   R(a) [AC] =  2.9590
+   R(b) [AG] =  11.1901
+   R(c) [AT] =  2.9590
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  11.1901
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4220
+  Computation time = 00h:00:00:04  (00h:00:30:00)
+
+Maximum likelihod estimation for the TPM2+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM2+I+G
+   partition = 010212
+   -lnL = 3130.2425
+   K = 21
+   R(a) [AC] =  2.9812
+   R(b) [AG] =  11.2970
+   R(c) [AT] =  2.9812
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  11.2970
+   R(f) [GT] =  1.0000
+   p-inv = 0.2200
+   gamma shape = 0.7450
+  Computation time = 00h:00:02:02  (00h:00:32:02)
+
+Maximum likelihod estimation for the TPM2uf model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f e -o l
+ExitValue: 0
+   Model = TPM2uf
+   partition = 010212
+   -lnL = 3025.8637
+   K = 22
+   freqA = 0.4008 
+   freqC = 0.2034 
+   freqG = 0.1061 
+   freqT = 0.2897 
+   R(a) [AC] =  0.9477
+   R(b) [AG] =  5.4540
+   R(c) [AT] =  0.9477
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  5.4540
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:32:04)
+
+Maximum likelihod estimation for the TPM2uf+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f e -v e -o l
+ExitValue: 0
+   Model = TPM2uf+I
+   partition = 010212
+   -lnL = 3004.5620
+   K = 23
+   freqA = 0.4010 
+   freqC = 0.2032 
+   freqG = 0.1059 
+   freqT = 0.2900 
+   R(a) [AC] =  0.9708
+   R(b) [AG] =  6.3288
+   R(c) [AT] =  0.9708
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.3288
+   R(f) [GT] =  1.0000
+   p-inv = 0.4670
+  Computation time = 00h:00:00:04  (00h:00:32:09)
+
+Maximum likelihod estimation for the TPM2uf+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM2uf+G
+   partition = 010212
+   -lnL = 3002.3175
+   K = 23
+   freqA = 0.4010 
+   freqC = 0.2030 
+   freqG = 0.1058 
+   freqT = 0.2901 
+   R(a) [AC] =  0.9669
+   R(b) [AG] =  6.3932
+   R(c) [AT] =  0.9669
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.3932
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5240
+  Computation time = 00h:00:00:07  (00h:00:33:06)
+
+Maximum likelihod estimation for the TPM2uf+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010212 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM2uf+I+G
+   partition = 010212
+   -lnL = 3002.2477
+   K = 24
+   freqA = 0.4010 
+   freqC = 0.2031 
+   freqG = 0.1059 
+   freqT = 0.2900 
+   R(a) [AC] =  0.9758
+   R(b) [AG] =  6.4591
+   R(c) [AT] =  0.9758
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.4591
+   R(f) [GT] =  1.0000
+   p-inv = 0.1940
+   gamma shape = 0.8900
+  Computation time = 00h:00:03:01  (00h:00:36:07)
+
+Maximum likelihod estimation for the TPM3 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TPM3
+   partition = 012012
+   -lnL = 3160.2395
+   K = 19
+   R(a) [AC] =  0.5514
+   R(b) [AG] =  3.5416
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.5514
+   R(e) [CT] =  3.5416
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:36:08)
+
+Maximum likelihod estimation for the TPM3+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TPM3+I
+   partition = 012012
+   -lnL = 3136.4838
+   K = 20
+   R(a) [AC] =  0.4967
+   R(b) [AG] =  3.8178
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4967
+   R(e) [CT] =  3.8178
+   R(f) [GT] =  1.0000
+   p-inv = 0.5080
+  Computation time = 00h:00:00:02  (00h:00:37:00)
+
+Maximum likelihod estimation for the TPM3+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM3+G
+   partition = 012012
+   -lnL = 3133.8611
+   K = 20
+   R(a) [AC] =  0.4880
+   R(b) [AG] =  3.8277
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4880
+   R(e) [CT] =  3.8277
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4510
+  Computation time = 00h:00:00:05  (00h:00:37:05)
+
+Maximum likelihod estimation for the TPM3+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM3+I+G
+   partition = 012012
+   -lnL = 3133.7283
+   K = 21
+   R(a) [AC] =  0.4867
+   R(b) [AG] =  3.8366
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4867
+   R(e) [CT] =  3.8366
+   R(f) [GT] =  1.0000
+   p-inv = 0.2010
+   gamma shape = 0.7570
+  Computation time = 00h:00:02:03  (00h:00:39:08)
+
+Maximum likelihod estimation for the TPM3uf model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f e -o l
+ExitValue: 0
+   Model = TPM3uf
+   partition = 012012
+   -lnL = 3024.0534
+   K = 22
+   freqA = 0.4006 
+   freqC = 0.2066 
+   freqG = 0.1065 
+   freqT = 0.2863 
+   R(a) [AC] =  0.6564
+   R(b) [AG] =  4.8521
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6564
+   R(e) [CT] =  4.8521
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:40:00)
+
+Maximum likelihod estimation for the TPM3uf+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f e -v e -o l
+ExitValue: 0
+   Model = TPM3uf+I
+   partition = 012012
+   -lnL = 3002.7048
+   K = 23
+   freqA = 0.4010 
+   freqC = 0.2071 
+   freqG = 0.1062 
+   freqT = 0.2857 
+   R(a) [AC] =  0.6180
+   R(b) [AG] =  5.3898
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6180
+   R(e) [CT] =  5.3898
+   R(f) [GT] =  1.0000
+   p-inv = 0.4690
+  Computation time = 00h:00:00:05  (00h:00:40:05)
+
+Maximum likelihod estimation for the TPM3uf+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM3uf+G
+   partition = 012012
+   -lnL = 3000.4845
+   K = 23
+   freqA = 0.4010 
+   freqC = 0.2072 
+   freqG = 0.1062 
+   freqT = 0.2856 
+   R(a) [AC] =  0.6150
+   R(b) [AG] =  5.4484
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6150
+   R(e) [CT] =  5.4484
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5210
+  Computation time = 00h:00:01:08  (00h:00:42:03)
+
+Maximum likelihod estimation for the TPM3uf+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012012 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TPM3uf+I+G
+   partition = 012012
+   -lnL = 3000.4084
+   K = 24
+   freqA = 0.4009 
+   freqC = 0.2073 
+   freqG = 0.1063 
+   freqT = 0.2855 
+   R(a) [AC] =  0.6138
+   R(b) [AG] =  5.4607
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6138
+   R(e) [CT] =  5.4607
+   R(f) [GT] =  1.0000
+   p-inv = 0.1840
+   gamma shape = 0.8560
+  Computation time = 00h:00:05:01  (00h:00:47:04)
+
+Maximum likelihod estimation for the TIM1ef model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TIM1ef
+   partition = 012230
+   -lnL = 3156.5016
+   K = 20
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  5.1685
+   R(c) [AT] =  1.8317
+   R(d) [CG] =  1.8317
+   R(e) [CT] =  7.5538
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:47:05)
+
+Maximum likelihod estimation for the TIM1ef+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TIM1ef+I
+   partition = 012230
+   -lnL = 3134.0009
+   K = 21
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.2999
+   R(c) [AT] =  2.0845
+   R(d) [CG] =  2.0845
+   R(e) [CT] =  9.2368
+   R(f) [GT] =  1.0000
+   p-inv = 0.4970
+  Computation time = 00h:00:00:02  (00h:00:47:07)
+
+Maximum likelihod estimation for the TIM1ef+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM1ef+G
+   partition = 012230
+   -lnL = 3131.0949
+   K = 21
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.5229
+   R(c) [AT] =  2.1681
+   R(d) [CG] =  2.1681
+   R(e) [CT] =  9.6308
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4690
+  Computation time = 00h:00:00:03  (00h:00:48:01)
+
+Maximum likelihod estimation for the TIM1ef+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM1ef+I+G
+   partition = 012230
+   -lnL = 3130.9832
+   K = 22
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  6.5754
+   R(c) [AT] =  2.1800
+   R(d) [CG] =  2.1800
+   R(e) [CT] =  9.6994
+   R(f) [GT] =  1.0000
+   p-inv = 0.1980
+   gamma shape = 0.7820
+  Computation time = 00h:00:01:08  (00h:00:49:09)
+
+Maximum likelihod estimation for the TIM1 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f e -o l
+ExitValue: 0
+   Model = TIM1
+   partition = 012230
+   -lnL = 3024.3721
+   K = 23
+   freqA = 0.3991 
+   freqC = 0.2062 
+   freqG = 0.1057 
+   freqT = 0.2889 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  7.4210
+   R(c) [AT] =  1.4725
+   R(d) [CG] =  1.4725
+   R(e) [CT] =  7.0034
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:50:01)
+
+Maximum likelihod estimation for the TIM1+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f e -v e -o l
+ExitValue: 0
+   Model = TIM1+I
+   partition = 012230
+   -lnL = 3002.5346
+   K = 24
+   freqA = 0.3992 
+   freqC = 0.2071 
+   freqG = 0.1050 
+   freqT = 0.2887 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.4089
+   R(c) [AT] =  1.6781
+   R(d) [CG] =  1.6781
+   R(e) [CT] =  8.5574
+   R(f) [GT] =  1.0000
+   p-inv = 0.4720
+  Computation time = 00h:00:00:04  (00h:00:50:05)
+
+Maximum likelihod estimation for the TIM1+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM1+G
+   partition = 012230
+   -lnL = 3000.0446
+   K = 24
+   freqA = 0.3990 
+   freqC = 0.2074 
+   freqG = 0.1048 
+   freqT = 0.2888 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.8676
+   R(c) [AT] =  1.7386
+   R(d) [CG] =  1.7386
+   R(e) [CT] =  8.8514
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5080
+  Computation time = 00h:00:00:07  (00h:00:51:02)
+
+Maximum likelihod estimation for the TIM1+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012230 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM1+I+G
+   partition = 012230
+   -lnL = 2999.9654
+   K = 25
+   freqA = 0.3989 
+   freqC = 0.2076 
+   freqG = 0.1047 
+   freqT = 0.2889 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.9593
+   R(c) [AT] =  1.7479
+   R(d) [CG] =  1.7479
+   R(e) [CT] =  8.9015
+   R(f) [GT] =  1.0000
+   p-inv = 0.2080
+   gamma shape = 0.8960
+  Computation time = 00h:00:02:08  (00h:00:54:00)
+
+Maximum likelihod estimation for the TIM2ef model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TIM2ef
+   partition = 010232
+   -lnL = 3154.7962
+   K = 20
+   R(a) [AC] =  2.1733
+   R(b) [AG] =  6.4324
+   R(c) [AT] =  2.1733
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  9.4124
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:00:54:01)
+
+Maximum likelihod estimation for the TIM2ef+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TIM2ef+I
+   partition = 010232
+   -lnL = 3130.8055
+   K = 21
+   R(a) [AC] =  2.6945
+   R(b) [AG] =  8.5077
+   R(c) [AT] =  2.6945
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  12.0954
+   R(f) [GT] =  1.0000
+   p-inv = 0.5090
+  Computation time = 00h:00:00:03  (00h:00:54:04)
+
+Maximum likelihod estimation for the TIM2ef+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM2ef+G
+   partition = 010232
+   -lnL = 3127.9852
+   K = 21
+   R(a) [AC] =  2.7756
+   R(b) [AG] =  8.7420
+   R(c) [AT] =  2.7756
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  12.5457
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4430
+  Computation time = 00h:00:00:04  (00h:00:54:08)
+
+Maximum likelihod estimation for the TIM2ef+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM2ef+I+G
+   partition = 010232
+   -lnL = 3127.8347
+   K = 22
+   R(a) [AC] =  2.7958
+   R(b) [AG] =  8.8280
+   R(c) [AT] =  2.7958
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  12.6519
+   R(f) [GT] =  1.0000
+   p-inv = 0.1930
+   gamma shape = 0.7240
+  Computation time = 00h:00:01:08  (00h:00:56:05)
+
+Maximum likelihod estimation for the TIM2 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f e -o l
+ExitValue: 0
+   Model = TIM2
+   partition = 010232
+   -lnL = 3025.7895
+   K = 23
+   freqA = 0.3996 
+   freqC = 0.2044 
+   freqG = 0.1051 
+   freqT = 0.2909 
+   R(a) [AC] =  0.9455
+   R(b) [AG] =  5.6382
+   R(c) [AT] =  0.9455
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  5.3167
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:00:56:07)
+
+Maximum likelihod estimation for the TIM2+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f e -v e -o l
+ExitValue: 0
+   Model = TIM2+I
+   partition = 010232
+   -lnL = 3004.4305
+   K = 24
+   freqA = 0.3995 
+   freqC = 0.2045 
+   freqG = 0.1045 
+   freqT = 0.2915 
+   R(a) [AC] =  0.9602
+   R(b) [AG] =  6.6203
+   R(c) [AT] =  0.9602
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.0386
+   R(f) [GT] =  1.0000
+   p-inv = 0.4660
+  Computation time = 00h:00:00:05  (00h:00:57:02)
+
+Maximum likelihod estimation for the TIM2+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM2+G
+   partition = 010232
+   -lnL = 3002.1586
+   K = 24
+   freqA = 0.3996 
+   freqC = 0.2045 
+   freqG = 0.1043 
+   freqT = 0.2916 
+   R(a) [AC] =  0.9599
+   R(b) [AG] =  6.7645
+   R(c) [AT] =  0.9599
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.0969
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5240
+  Computation time = 00h:00:00:07  (00h:00:57:09)
+
+Maximum likelihod estimation for the TIM2+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 010232 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM2+I+G
+   partition = 010232
+   -lnL = 3002.0806
+   K = 25
+   freqA = 0.3994 
+   freqC = 0.2046 
+   freqG = 0.1042 
+   freqT = 0.2917 
+   R(a) [AC] =  0.9620
+   R(b) [AG] =  6.8078
+   R(c) [AT] =  0.9620
+   R(d) [CG] =  1.0000
+   R(e) [CT] =  6.1189
+   R(f) [GT] =  1.0000
+   p-inv = 0.1790
+   gamma shape = 0.8450
+  Computation time = 00h:00:03:02  (00h:01:01:02)
+
+Maximum likelihod estimation for the TIM3ef model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TIM3ef
+   partition = 012032
+   -lnL = 3156.1935
+   K = 20
+   R(a) [AC] =  0.5472
+   R(b) [AG] =  2.8691
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.5472
+   R(e) [CT] =  4.1942
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:01:01:02)
+
+Maximum likelihod estimation for the TIM3ef+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TIM3ef+I
+   partition = 012032
+   -lnL = 3133.5451
+   K = 21
+   R(a) [AC] =  0.4854
+   R(b) [AG] =  3.0484
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4854
+   R(e) [CT] =  4.4918
+   R(f) [GT] =  1.0000
+   p-inv = 0.4970
+  Computation time = 00h:00:00:02  (00h:01:01:05)
+
+Maximum likelihod estimation for the TIM3ef+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM3ef+G
+   partition = 012032
+   -lnL = 3130.9005
+   K = 21
+   R(a) [AC] =  0.4771
+   R(b) [AG] =  3.0514
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4771
+   R(e) [CT] =  4.5232
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4690
+  Computation time = 00h:00:00:04  (00h:01:01:08)
+
+Maximum likelihod estimation for the TIM3ef+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM3ef+I+G
+   partition = 012032
+   -lnL = 3130.7989
+   K = 22
+   R(a) [AC] =  0.4756
+   R(b) [AG] =  3.0585
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.4756
+   R(e) [CT] =  4.5308
+   R(f) [GT] =  1.0000
+   p-inv = 0.1790
+   gamma shape = 0.7430
+  Computation time = 00h:00:02:01  (00h:01:03:09)
+
+Maximum likelihod estimation for the TIM3 model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f e -o l
+ExitValue: 0
+   Model = TIM3
+   partition = 012032
+   -lnL = 3023.9794
+   K = 23
+   freqA = 0.3994 
+   freqC = 0.2077 
+   freqG = 0.1055 
+   freqT = 0.2874 
+   R(a) [AC] =  0.6567
+   R(b) [AG] =  5.0215
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6567
+   R(e) [CT] =  4.7410
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:03  (00h:01:04:02)
+
+Maximum likelihod estimation for the TIM3+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f e -v e -o l
+ExitValue: 0
+   Model = TIM3+I
+   partition = 012032
+   -lnL = 3002.5655
+   K = 24
+   freqA = 0.3995 
+   freqC = 0.2086 
+   freqG = 0.1048 
+   freqT = 0.2872 
+   R(a) [AC] =  0.6190
+   R(b) [AG] =  5.6989
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6190
+   R(e) [CT] =  5.1880
+   R(f) [GT] =  1.0000
+   p-inv = 0.4680
+  Computation time = 00h:00:00:05  (00h:01:04:07)
+
+Maximum likelihod estimation for the TIM3+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM3+G
+   partition = 012032
+   -lnL = 3000.3108
+   K = 24
+   freqA = 0.3994 
+   freqC = 0.2087 
+   freqG = 0.1046 
+   freqT = 0.2873 
+   R(a) [AC] =  0.6155
+   R(b) [AG] =  5.8164
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6155
+   R(e) [CT] =  5.2214
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5200
+  Computation time = 00h:00:00:07  (00h:01:05:04)
+
+Maximum likelihod estimation for the TIM3+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012032 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TIM3+I+G
+   partition = 012032
+   -lnL = 3000.2282
+   K = 25
+   freqA = 0.3993 
+   freqC = 0.2089 
+   freqG = 0.1045 
+   freqT = 0.2873 
+   R(a) [AC] =  0.6143
+   R(b) [AG] =  5.8386
+   R(c) [AT] =  1.0000
+   R(d) [CG] =  0.6143
+   R(e) [CT] =  5.2230
+   R(f) [GT] =  1.0000
+   p-inv = 0.1760
+   gamma shape = 0.8320
+  Computation time = 00h:00:03:01  (00h:01:08:05)
+
+Maximum likelihod estimation for the TVMef model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = TVMef
+   partition = 012314
+   -lnL = 3154.1401
+   K = 21
+   R(a) [AC] =  1.3293
+   R(b) [AG] =  7.6009
+   R(c) [AT] =  2.7823
+   R(d) [CG] =  0.8744
+   R(e) [CT] =  7.6009
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:01:08:06)
+
+Maximum likelihod estimation for the TVMef+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = TVMef+I
+   partition = 012314
+   -lnL = 3127.8147
+   K = 22
+   R(a) [AC] =  1.6752
+   R(b) [AG] =  11.0696
+   R(c) [AT] =  4.1183
+   R(d) [CG] =  0.9777
+   R(e) [CT] =  11.0696
+   R(f) [GT] =  1.0000
+   p-inv = 0.5240
+  Computation time = 00h:00:00:02  (00h:01:08:08)
+
+Maximum likelihod estimation for the TVMef+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = TVMef+G
+   partition = 012314
+   -lnL = 3124.7591
+   K = 22
+   R(a) [AC] =  1.7428
+   R(b) [AG] =  11.8674
+   R(c) [AT] =  4.4525
+   R(d) [CG] =  1.0421
+   R(e) [CT] =  11.8674
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4100
+  Computation time = 00h:00:00:04  (00h:01:09:02)
+
+Maximum likelihod estimation for the TVMef+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TVMef+I+G
+   partition = 012314
+   -lnL = 3124.5367
+   K = 23
+   R(a) [AC] =  1.7628
+   R(b) [AG] =  12.0826
+   R(c) [AT] =  4.5348
+   R(d) [CG] =  1.0537
+   R(e) [CT] =  12.0826
+   R(f) [GT] =  1.0000
+   p-inv = 0.2160
+   gamma shape = 0.7090
+  Computation time = 00h:00:01:08  (00h:01:11:00)
+
+Maximum likelihod estimation for the TVM model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f e -o l
+ExitValue: 0
+   Model = TVM
+   partition = 012314
+   -lnL = 3023.7628
+   K = 24
+   freqA = 0.4011 
+   freqC = 0.2066 
+   freqG = 0.1062 
+   freqT = 0.2861 
+   R(a) [AC] =  0.6614
+   R(b) [AG] =  5.2759
+   R(c) [AT] =  1.1086
+   R(d) [CG] =  0.9119
+   R(e) [CT] =  5.2759
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:02  (00h:01:11:01)
+
+Maximum likelihod estimation for the TVM+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f e -v e -o l
+ExitValue: 0
+   Model = TVM+I
+   partition = 012314
+   -lnL = 3002.1868
+   K = 25
+   freqA = 0.4012 
+   freqC = 0.2072 
+   freqG = 0.1060 
+   freqT = 0.2855 
+   R(a) [AC] =  0.6661
+   R(b) [AG] =  6.5283
+   R(c) [AT] =  1.2619
+   R(d) [CG] =  1.0357
+   R(e) [CT] =  6.5283
+   R(f) [GT] =  1.0000
+   p-inv = 0.4710
+  Computation time = 00h:00:00:04  (00h:01:11:06)
+
+Maximum likelihod estimation for the TVM+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = TVM+G
+   partition = 012314
+   -lnL = 2999.8080
+   K = 25
+   freqA = 0.4012 
+   freqC = 0.2072 
+   freqG = 0.1061 
+   freqT = 0.2856 
+   R(a) [AC] =  0.6752
+   R(b) [AG] =  6.8507
+   R(c) [AT] =  1.3182
+   R(d) [CG] =  1.1077
+   R(e) [CT] =  6.8507
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5130
+  Computation time = 00h:00:00:07  (00h:01:12:03)
+
+Maximum likelihod estimation for the TVM+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012314 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = TVM+I+G
+   partition = 012314
+   -lnL = 2999.7251
+   K = 26
+   freqA = 0.4011 
+   freqC = 0.2073 
+   freqG = 0.1061 
+   freqT = 0.2854 
+   R(a) [AC] =  0.6788
+   R(b) [AG] =  6.9178
+   R(c) [AT] =  1.3302
+   R(d) [CG] =  1.1122
+   R(e) [CT] =  6.9178
+   R(f) [GT] =  1.0000
+   p-inv = 0.1620
+   gamma shape = 0.7820
+  Computation time = 00h:00:03:01  (00h:01:15:04)
+
+Maximum likelihod estimation for the SYM model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f 0.25 0.25 0.25 0.25 -o l
+ExitValue: 0
+   Model = SYM
+   partition = 012345
+   -lnL = 3150.0637
+   K = 22
+   R(a) [AC] =  1.2998
+   R(b) [AG] =  6.0913
+   R(c) [AT] =  2.7432
+   R(d) [CG] =  0.8631
+   R(e) [CT] =  8.9068
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:01  (00h:01:15:05)
+
+Maximum likelihod estimation for the SYM+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f 0.25 0.25 0.25 0.25 -v e -o l
+ExitValue: 0
+   Model = SYM+I
+   partition = 012345
+   -lnL = 3125.3918
+   K = 23
+   R(a) [AC] =  1.5059
+   R(b) [AG] =  8.4153
+   R(c) [AT] =  3.7708
+   R(d) [CG] =  0.9296
+   R(e) [CT] =  12.0072
+   R(f) [GT] =  1.0000
+   p-inv = 0.5130
+  Computation time = 00h:00:00:03  (00h:01:15:08)
+
+Maximum likelihod estimation for the SYM+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f 0.25 0.25 0.25 0.25 -c 4 -a e -o l
+ExitValue: 0
+   Model = SYM+G
+   partition = 012345
+   -lnL = 3122.2973
+   K = 23
+   R(a) [AC] =  1.5615
+   R(b) [AG] =  8.9696
+   R(c) [AT] =  4.0695
+   R(d) [CG] =  0.9875
+   R(e) [CT] =  12.9070
+   R(f) [GT] =  1.0000
+   gamma shape = 0.4300
+  Computation time = 00h:00:00:04  (00h:01:16:02)
+
+Maximum likelihod estimation for the SYM+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f 0.25 0.25 0.25 0.25 -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = SYM+I+G
+   partition = 012345
+   -lnL = 3122.1203
+   K = 24
+   R(a) [AC] =  1.5782
+   R(b) [AG] =  9.1495
+   R(c) [AT] =  4.1461
+   R(d) [CG] =  0.9991
+   R(e) [CT] =  13.1340
+   R(f) [GT] =  1.0000
+   p-inv = 0.2120
+   gamma shape = 0.7380
+  Computation time = 00h:00:01:09  (00h:01:18:01)
+
+Maximum likelihod estimation for the GTR model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f e -o l
+ExitValue: 0
+   Model = GTR
+   partition = 012345
+   -lnL = 3023.6852
+   K = 25
+   freqA = 0.3998 
+   freqC = 0.2078 
+   freqG = 0.1052 
+   freqT = 0.2873 
+   R(a) [AC] =  0.6595
+   R(b) [AG] =  5.4485
+   R(c) [AT] =  1.1052
+   R(d) [CG] =  0.9111
+   R(e) [CT] =  5.1385
+   R(f) [GT] =  1.0000
+  Computation time = 00h:00:00:03  (00h:01:18:04)
+
+Maximum likelihod estimation for the GTR+I model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f e -v e -o l
+ExitValue: 0
+   Model = GTR+I
+   partition = 012345
+   -lnL = 3002.0428
+   K = 26
+   freqA = 0.3997 
+   freqC = 0.2086 
+   freqG = 0.1046 
+   freqT = 0.2871 
+   R(a) [AC] =  0.6600
+   R(b) [AG] =  6.8514
+   R(c) [AT] =  1.2481
+   R(d) [CG] =  1.0375
+   R(e) [CT] =  6.2248
+   R(f) [GT] =  1.0000
+   p-inv = 0.4700
+  Computation time = 00h:00:00:05  (00h:01:18:09)
+
+Maximum likelihod estimation for the GTR+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f e -c 4 -a e -o l
+ExitValue: 0
+   Model = GTR+G
+   partition = 012345
+   -lnL = 2999.6247
+   K = 26
+   freqA = 0.3996 
+   freqC = 0.2089 
+   freqG = 0.1043 
+   freqT = 0.2872 
+   R(a) [AC] =  0.6680
+   R(b) [AG] =  7.2764
+   R(c) [AT] =  1.3061
+   R(d) [CG] =  1.1129
+   R(e) [CT] =  6.5061
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5120
+  Computation time = 00h:00:01:01  (00h:01:20:01)
+
+Maximum likelihod estimation for the GTR+I+G model.
+  BIONJ tree topology
+Command line =  -i data.phy -d nt -n 1 -b 0 -m 012345 -f e -v e -c 4 -a e -o l
+ExitValue: 0
+   Model = GTR+I+G
+   partition = 012345
+   -lnL = 2999.5411
+   K = 27
+   freqA = 0.3994 
+   freqC = 0.2090 
+   freqG = 0.1044 
+   freqT = 0.2873 
+   R(a) [AC] =  0.6699
+   R(b) [AG] =  7.3406
+   R(c) [AT] =  1.3140
+   R(d) [CG] =  1.1156
+   R(e) [CT] =  6.5478
+   R(f) [GT] =  1.0000
+   p-inv = 0.1880
+   gamma shape = 0.8480
+  Computation time = 00h:00:04:01  (00h:01:24:01)
+
+Computation of likelihood scores completed. It took 00h:01:24:01.
+
+
+
+
+---------------------------------------------------------------
+*                                                             *
+*             AKAIKE INFORMATION CRITERION (AIC)              *
+*                                                             *
+---------------------------------------------------------------
+
+ Model selected: 
+   Model = TPM1uf+G
+   partition = 012210
+   -lnL = 3000.2201
+   K = 23
+   freqA = 0.4007 
+   freqC = 0.2058 
+   freqG = 0.1065 
+   freqT = 0.2871 
+   R(a) [AC] =  1.0000
+   R(b) [AG] =  9.2320
+   R(c) [AT] =  1.7356
+   R(d) [CG] =  1.7356
+   R(e) [CT] =  9.2320
+   R(f) [GT] =  1.0000
+   gamma shape = 0.5090
+
+
+* AIC MODEL SELECTION : Selection uncertainty
+
+Model             -lnL    K         AIC      delta      weight cumWeight
+------------------------------------------------------------------------
+TPM1uf+G     3000.2201   23   6046.4403     0.0000      0.1918    0.1918
+TPM3uf+G     3000.4845   23   6046.9691     0.5288      0.1472    0.3390
+TIM1+G       3000.0446   24   6048.0891     1.6489      0.0841    0.4231
+TPM1uf+I+G   3000.1348   24   6048.2696     1.8293      0.0768    0.5000
+TIM3+G       3000.3108   24   6048.6215     2.1812      0.0644    0.5644
+HKY+G        3002.3210   22   6048.6420     2.2017      0.0638    0.6282
+TPM3uf+I+G   3000.4084   24   6048.8169     2.3766      0.0584    0.6867
+TVM+G        2999.8080   25   6049.6160     3.1757      0.0392    0.7259
+TIM1+I+G     2999.9654   25   6049.9309     3.4906      0.0335    0.7593
+TrN+G        3002.1676   23   6050.3352     3.8949      0.0274    0.7867
+TIM3+I+G     3000.2282   25   6050.4564     4.0161      0.0257    0.8124
+HKY+I+G      3002.2474   23   6050.4947     4.0544      0.0253    0.8377
+TPM2uf+G     3002.3175   23   6050.6350     4.1947      0.0235    0.8613
+GTR+G        2999.6247   26   6051.2495     4.8092      0.0173    0.8786
+TPM1uf+I     3002.6760   23   6051.3520     4.9117      0.0165    0.8950
+TPM3uf+I     3002.7048   23   6051.4096     4.9693      0.0160    0.9110
+TVM+I+G      2999.7251   26   6051.4502     5.0099      0.0157    0.9267
+TrN+I+G      3002.0882   24   6052.1763     5.7360      0.0109    0.9376
+TIM2+G       3002.1586   24   6052.3173     5.8770      0.0102    0.9477
+TPM2uf+I+G   3002.2477   24   6052.4954     6.0551      0.0093    0.9570
+TIM1+I       3002.5346   24   6053.0692     6.6290      0.0070    0.9640
+GTR+I+G      2999.5411   27   6053.0822     6.6419      0.0069    0.9709
+TIM3+I       3002.5655   24   6053.1310     6.6908      0.0068    0.9777
+HKY+I        3004.5675   22   6053.1351     6.6948      0.0067    0.9844
+TIM2+I+G     3002.0806   25   6054.1612     7.7209      0.0040    0.9885
+TVM+I        3002.1868   25   6054.3735     7.9332      0.0036    0.9921
+TrN+I        3004.4404   23   6054.8808     8.4406      0.0028    0.9949
+TPM2uf+I     3004.5620   23   6055.1240     8.6838      0.0025    0.9974
+GTR+I        3002.0428   26   6056.0855     9.6452      0.0015    0.9990
+TIM2+I       3004.4305   24   6056.8609    10.4206      0.0010    1.0000
+TPM3uf       3024.0534   22   6092.1068    45.6665   2.33e-011    1.0000
+TPM1uf       3024.4477   22   6092.8954    46.4551   1.57e-011    1.0000
+HKY          3025.8837   21   6093.7674    47.3271   1.01e-011    1.0000
+TIM3         3023.9794   23   6093.9588    47.5185   9.21e-012    1.0000
+TIM1         3024.3721   23   6094.7442    48.3039   6.22e-012    1.0000
+TVM          3023.7628   24   6095.5255    49.0852   4.21e-012    1.0000
+TrN          3025.8122   22   6095.6243    49.1840   4.01e-012    1.0000
+TPM2uf       3025.8637   22   6095.7273    49.2870   3.80e-012    1.0000
+GTR          3023.6852   25   6097.3705    50.9302   1.67e-012    1.0000
+TIM2         3025.7895   23   6097.5791    51.1388   1.51e-012    1.0000
+F81+G        3122.9502   21   6287.9005   241.4602   7.09e-054    1.0000
+F81+I+G      3122.9118   22   6289.8236   243.3833   2.71e-054    1.0000
+SYM+G        3122.2973   23   6290.5946   244.1543   1.84e-054    1.0000
+SYM+I+G      3122.1203   24   6292.2405   245.8002   8.09e-055    1.0000
+F81+I        3125.1380   21   6292.2759   245.8357   7.95e-055    1.0000
+TVMef+G      3124.7591   22   6293.5183   247.0780   4.27e-055    1.0000
+TVMef+I+G    3124.5367   23   6295.0734   248.6331   1.96e-055    1.0000
+SYM+I        3125.3918   23   6296.7836   250.3433   8.35e-056    1.0000
+TIM2ef+G     3127.9852   21   6297.9703   251.5300   4.61e-056    1.0000
+TVMef+I      3127.8147   22   6299.6295   253.1892   2.01e-056    1.0000
+TIM2ef+I+G   3127.8347   22   6299.6694   253.2291   1.97e-056    1.0000
+TPM2+G       3130.4302   20   6300.8603   254.4201   1.09e-056    1.0000
+TPM2+I+G     3130.2425   21   6302.4849   256.0446   4.82e-057    1.0000
+TIM2ef+I     3130.8055   21   6303.6109   257.1706   2.75e-057    1.0000
+TIM3ef+G     3130.9005   21   6303.8009   257.3606   2.50e-057    1.0000
+TIM1ef+G     3131.0949   21   6304.1899   257.7496   2.06e-057    1.0000
+TIM3ef+I+G   3130.7989   22   6305.5977   259.1574   1.02e-057    1.0000
+TIM1ef+I+G   3130.9832   22   6305.9664   259.5262   8.46e-058    1.0000
+TPM2+I       3133.1900   20   6306.3801   259.9398   6.88e-058    1.0000
+TPM3+G       3133.8611   20   6307.7221   261.2819   3.52e-058    1.0000
+TPM1+G       3133.9887   20   6307.9773   261.5370   3.10e-058    1.0000
+TIM3ef+I     3133.5451   21   6309.0903   262.6500   1.77e-058    1.0000
+TPM3+I+G     3133.7283   21   6309.4567   263.0164   1.48e-058    1.0000
+TPM1+I+G     3133.8398   21   6309.6795   263.2392   1.32e-058    1.0000
+TIM1ef+I     3134.0009   21   6310.0018   263.5615   1.13e-058    1.0000
+TrNef+G      3135.4327   20   6310.8655   264.4252   7.31e-059    1.0000
+TrNef+I+G    3135.3392   21   6312.6784   266.2381   2.95e-059    1.0000
+TPM3+I       3136.4838   20   6312.9677   266.5274   2.55e-059    1.0000
+TPM1+I       3136.8668   20   6313.7335   267.2932   1.74e-059    1.0000
+K80+G        3138.3333   19   6314.6666   268.2263   1.09e-059    1.0000
+TrNef+I      3138.0036   20   6316.0072   269.5669   5.59e-060    1.0000
+K80+I+G      3138.2086   20   6316.4171   269.9769   4.55e-060    1.0000
+K80+I        3140.8670   19   6319.7340   273.2938   8.67e-061    1.0000
+F81          3142.8679   20   6325.7358   279.2955   4.31e-062    1.0000
+SYM          3150.0637   22   6344.1274   297.6871   4.37e-066    1.0000
+TIM2ef       3154.7962   20   6349.5924   303.1521   2.85e-067    1.0000
+TVMef        3154.1401   21   6350.2803   303.8400   2.02e-067    1.0000
+TIM3ef       3156.1935   20   6352.3869   305.9466   7.04e-068    1.0000
+TIM1ef       3156.5016   20   6353.0032   306.5629   5.17e-068    1.0000
+TPM2         3158.8813   19   6355.7627   309.3224   1.30e-068    1.0000
+TrNef        3160.1491   19   6358.2982   311.8579   3.66e-069    1.0000
+TPM3         3160.2395   19   6358.4791   312.0388   3.35e-069    1.0000
+TPM1         3160.5442   19   6359.0883   312.6481   2.47e-069    1.0000
+K80          3164.1938   18   6364.3876   317.9473   1.74e-070    1.0000
+JC+G         3231.4542   18   6498.9083   452.4680   1.07e-099    1.0000
+JC+I+G       3231.4071   19   6500.8142   454.3739   4.14e-100    1.0000
+JC+I         3233.7976   18   6503.5951   457.1548   1.03e-100    1.0000
+JC           3252.8601   17   6539.7202   493.2799   1.47e-108    1.0000
+------------------------------------------------------------------------
+-lnL:	negative log likelihod
+ K:	number of estimated parameters
+ AIC:	Akaike Information Criterion
+ delta:	AIC difference
+ weight:	AIC weight
+ cumWeight:	cumulative AIC weight
+
+
+* AIC MODEL SELECTION : Confidence interval
+
+There are 88 models in the 100% confidence interval: [ TPM1uf+G TPM3uf+G TIM1+G TPM1uf+I+G TIM3+G HKY+G TPM3uf+I+G TVM+G TIM1+I+G TrN+G TIM3+I+G HKY+I+G TPM2uf+G GTR+G TPM1uf+I TPM3uf+I TVM+I+G TrN+I+G TIM2+G TPM2uf+I+G TIM1+I GTR+I+G TIM3+I HKY+I TIM2+I+G TVM+I TrN+I TPM2uf+I GTR+I TIM2+I TPM3uf TPM1uf HKY TIM3 TIM1 TVM TrN TPM2uf GTR TIM2 F81+G F81+I+G SYM+G SYM+I+G F81+I TVMef+G TVMef+I+G SYM+I TIM2ef+G TVMef+I TIM2ef+I+G TPM2+G TPM2+I+G TIM2ef+I TIM3ef+G TIM1ef+G TIM3ef+I+G TIM1ef+I+G TPM2+I TPM3+G TPM1+G TIM3ef+I TPM3+I+G TPM1+I+G TIM1ef+I TrNef+G TrNef+I+G TPM3+I TPM1+I K80+G TrNef+I K80+I+G K80+I F81 SYM TIM2ef TVMef TIM3ef TIM1ef TPM2 TrNef TPM3 TPM1 K80 JC+G JC+I+G JC+I JC ] 
+
+Program is done.
+
