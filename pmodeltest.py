@@ -34,6 +34,9 @@ from re import sub
 import sys
 from cmath import exp
 from time import sleep
+import signal
+
+PHYML = 'phyml'
 
 def main():
     '''
@@ -125,20 +128,26 @@ def get_job_list(algt, wanted_models, speed=True, verbose=False, protein=False,
     return job_list
 
 def launch_job(job):
+
+    signal.signal(signal.SIGINT, sys.exit)
     jobname = job[0]
     jobdata = job[1]
     cmd_args = jobdata["cmd"]
     cmd = ' '.join(cmd_args)
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
-    out, err = p.communicate()
+    try:
+        p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+    except:
+        sys.exit(-1)
+    else:
+        out, err = p.communicate()
     return (jobname, out, err)
     
 def run_jobs(job_list, nprocs=1, refresh=2):
     '''
     run jobs, parallelizing in given number of CPUs
     '''
-    print (PHYML)
-    p = Pool(nprocs)
+
+    p = Pool(int(nprocs))
     data = p.map(launch_job, [(jname, jdata) for jname, jdata in job_list.items()])
     for jname, out, err in data:
         job_list[jname]['out'] = out
@@ -271,7 +280,7 @@ def clean_all(job_list, algt):
               shell=True).communicate()
 
         
-def print_model_estimations (dic):
+def print_model_estimations(dic):
     '''
     prints table with estimation of rates/frequencies done by phyML
     '''
@@ -370,7 +379,7 @@ def get_options():
                         help='name of outfile tree (newick format)')
     parser.add_argument('-O', dest='outtrees', metavar="PATH",
                         help='name of outfile with all trees (newick format)')
-    parser.add_argument('--phyml', dest='phyml', type=str, required=True,
+    parser.add_argument('--phyml', dest='PHYML', type=str, required=True,
                         help='path to phyml binary')
     parser.add_argument('--support', action='store_true',
                         dest='support', default=False,
@@ -427,7 +436,6 @@ def get_options():
                         help= '''[%(default)s] DNA/AA models.
                         e.g.: -m "JC,TrN,GTR"''')
     opts = parser.parse_args()
-    print(opts)
     
     typ = 'aa' if opts.protein else 'dna'
     if not opts.algt:
@@ -533,8 +541,6 @@ MODELNAMES = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'HIVw'     + '+F': ['HIVw'    , 19],
                        'HIVb'     + '+F': ['HIVb'    , 19]}
                }
-
-PHYML = "phyml"
 
 if __name__ == "__main__":
     main()
