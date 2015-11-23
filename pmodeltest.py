@@ -41,7 +41,6 @@ def main():
     infile must be in phylip format.
     '''
     global PHYML
-    print (phyml)
     opts = get_options()
     PHYML= opts.PHYML
     # remove gamma inv and frequencies if not wanted
@@ -535,7 +534,7 @@ MODELNAMES = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'HIVb'     + '+F': ['HIVb'    , 19]}
                }
 
-PHYML = "~/.etetoolkit/ext_apps-latest/bin/phyml"
+PHYML = "phyml"
 
 if __name__ == "__main__":
     main()
