@@ -19,34 +19,31 @@ and ProtTest:
 WARNING: only working with phyml version: v3.0_360-500M
          available at: http://www.atgc-montpellier.fr/phyml/
 """
+from __future__ import print_function
 
 __author__  = "francois serra"
-__email__   = "francois@barrabin.org"
+__email__   = "serra.francois@gmail.com"
 __licence__ = "GPLv3"
 __version__ = "1.04"
 __title__   = "pmodeltest v%s" % __version__
 
 from argparse import ArgumentParser
+from multiprocessing import Pool
 from subprocess import Popen, PIPE
 from re import sub
-from sys import stderr as STDERR
-from sys import stdout as STDOUT
+import sys
 from cmath import exp
 from time import sleep
-
-# global
-PHYML = Popen('which phyml', shell=True, stdout=PIPE).communicate()[0]
-PHYML = PHYML.strip()
-
 
 def main():
     '''
     main function when called by command line.
     infile must be in phylip format.
     '''
-    opts = get_options()
     global PHYML
-    PHYML = opts.PHYML
+    print (phyml)
+    opts = get_options()
+    PHYML= opts.PHYML
     # remove gamma inv and frequencies if not wanted
     if opts.nogam:
         del GAMMA ['+G']
@@ -90,7 +87,7 @@ def main():
                          '\ntree (nw):    ' + job_list [run]['tree'] + '\n')
         out_t.close ()
 
-    print >> STDOUT, "Done."
+    print("Done.")
 
 
 def get_job_list(algt, wanted_models, speed=True, verbose=False, protein=False,
@@ -125,51 +122,28 @@ def get_job_list(algt, wanted_models, speed=True, verbose=False, protein=False,
                     }
     if verbose:
         for job in job_list:
-            print job + ': ' + ' '.join(job_list[job]['cmd'])
+            print (job + ': ' + ' '.join(job_list[job]['cmd']))
     return job_list
 
+def launch_job(job):
+    jobname = job[0]
+    jobdata = job[1]
+    cmd_args = jobdata["cmd"]
+    cmd = ' '.join(cmd_args)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+    out, err = p.communicate()
+    return (jobname, out, err)
     
 def run_jobs(job_list, nprocs=1, refresh=2):
     '''
     run jobs, parallelizing in given number of CPUs
     '''
-    procs = {}
-    done = 0
-    todo = len (job_list)
-    jobs = job_list.keys()[:]
-    try:
-        while True:
-            if len(procs)<nprocs and jobs:
-                job = jobs.pop()
-                procs[job] = {'p'  : Popen(job_list[job]['cmd'],
-                                           stderr=PIPE,
-                                           stdout=PIPE,
-                                           stdin=Popen(['echo','end'],
-                                                       stdout=PIPE).stdout),
-                              'job': job}
-                sleep(refresh)
-                continue
-            for proc in procs:
-                if procs[proc]['p'].poll() is None:
-                    continue
-                if procs[proc]['p'].returncode == -9:
-                    print ' WAHOOO!!! this was killed:'
-                    print procs[proc]
-                    return
-                out, err = procs[proc]['p'].communicate()
-                if 'Err: ' in out:
-                    exit ('ERROR: problem running phyml: '+out)
-                del procs[proc]
-                done += 1
-                job_list[job]['out'] = out
-                job_list[job]['err'] = err
-                break
-            sleep(refresh)
-            if done == todo:
-                break
-    except Exception as err:
-        print 'ERROR at', job
-        print err
+    print (PHYML)
+    p = Pool(nprocs)
+    data = p.map(launch_job, [(jname, jdata) for jname, jdata in job_list.items()])
+    for jname, out, err in data:
+        job_list[jname]['out'] = out
+        job_list[jname]['err'] = err
     return job_list
 
     
@@ -188,7 +162,7 @@ def parse_jobs(job_list, algt):
             job_list[job]['dic' ] = dic
             job_list[job]['tree'] = get_tree (algt + '_phyml_tree_%s.txt' % job)
     except IOError:
-        print >> STDERR, 'ERROR (parse_job): no outfile found.'
+        print ('ERROR (parse_job): no outfile found.', file=sys.stderr)
         exit()
     return job_list
 
@@ -232,7 +206,7 @@ def aic_calc(job_list, speed, verbose=False):
                                    job_list[x]['weight'],
                                    job_list[x]['cumweight']) for x in ord_aic])
         table += '\n'
-        print >> STDOUT, table
+        print (table)
     return job_list, ord_aic
 
     
@@ -240,7 +214,7 @@ def re_run(job_list, algt, cutoff=0.95, nprocs=1, refresh=2, verbose=False):
     '''
     rerun best jobs according to given cutoff value for cumulative weigth
     '''
-    for job in job_list.keys()[:]:
+    for job in list(job_list.keys()):
         if job_list[job]['cumweight'] > cutoff:
             del job_list[job]
     if verbose:
@@ -249,7 +223,7 @@ def re_run(job_list, algt, cutoff=0.95, nprocs=1, refresh=2, verbose=False):
         table += '    doing the same but computing topologies'
         table += ' only for models that sums a weight of 0.95\n\n    '
         table += '\n    '.join(job_list.keys()) + '\n'
-        print >> STDOUT, table
+        print (table)
     job_list = run_jobs(job_list, nprocs=nprocs, refresh=refresh)
     return parse_jobs(job_list, algt)
 
@@ -260,29 +234,30 @@ def re_run_best(better, cmd, algt, verbose=True):
     of SH values.
     '''
     if verbose:
-        print >> STDOUT, '\n\n*************************************************'
-        print >> STDOUT, 'Re-run best models with rates and support...'
+        print ('\n\n*************************************************')
+        print ('Re-run best models with rates and support...')
 
     # add best tree search and support to phyml command line
     cmd [cmd.index ('-b')+1] = '-4'
     cmd += ['-s', 'BEST']
     if verbose:
-        print >> STDOUT, '  Command line = ' + ' '.join (cmd) + '\n'
+        print ('  Command line = ' + ' '.join (cmd) + '\n')
     # run last phyml
     (out, err) = Popen('echo "end" | ' + ' '.join (cmd),
                        stdout=PIPE, shell=True,
                        stdin=Popen(['echo','end'],
                                    stdout=PIPE).stdout).communicate()
-    if err is not None or 'Err: ' in out:
+    
+    if err or 'Err: ' in str(out):
         exit ('ERROR: problem at last run of phyml: '+out)
     tree = get_tree   (algt + '_phyml_tree_%s.txt' % better)
     if verbose:
-        print >> STDOUT, '\n Corresponding estimations of rates/frequencies:\n'
+        print ('\n Corresponding estimations of rates/frequencies:\n')
         stats = parse_stats (algt + '_phyml_stats_%s.txt' % better)
         print_model_estimations(stats[2])
-        print >> STDOUT, '\nTree corresponding to best model, ',
-        print >> STDOUT, better + ' (with SH-like branch supports alone)\n'
-        print >> STDOUT,  tree
+        print ('\nTree corresponding to best model, ', end="")
+        print (better + ' (with SH-like branch supports alone)\n')
+        print (tree)
     return tree
 
     
@@ -304,18 +279,18 @@ def print_model_estimations (dic):
     for key in dic:
         if (key.startswith('freq') or key.startswith('rate')):
             continue
-        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
-    print >> STDOUT, ''
+        print ('     %-20s = %s' % (key, dic [key]))
+    print()
     for key in dic:
         if not key.startswith ('freq'):
             continue
-        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
-    print >> STDOUT, ''
+        print ('     %-20s = %s' % (key, dic [key]))
+    print()
     for key in dic:
         if not key.startswith ('rate'):
             continue
-        print >> STDOUT, '     %-20s = %s' % (key, dic [key])
-    print >> STDOUT, ''
+        print ('     %-20s = %s' % (key, dic [key]))
+    print()
 
 def parse_stats(path):
     '''
@@ -396,8 +371,8 @@ def get_options():
                         help='name of outfile tree (newick format)')
     parser.add_argument('-O', dest='outtrees', metavar="PATH",
                         help='name of outfile with all trees (newick format)')
-    parser.add_argument('--phyml', dest='PHYML', type=str, default=PHYML,
-                        help='[%(default)s] path to phyml.')
+    parser.add_argument('--phyml', dest='phyml', type=str, required=True,
+                        help='path to phyml binary')
     parser.add_argument('--support', action='store_true',
                         dest='support', default=False,
                         help='''[%(default)s] compute SH-like branch support
@@ -453,6 +428,8 @@ def get_options():
                         help= '''[%(default)s] DNA/AA models.
                         e.g.: -m "JC,TrN,GTR"''')
     opts = parser.parse_args()
+    print(opts)
+    
     typ = 'aa' if opts.protein else 'dna'
     if not opts.algt:
         exit(parser.print_help())
@@ -462,6 +439,7 @@ def get_options():
         opts.models = model_list[typ]
     else:
         opts.models = opts.models.split(',')
+
     return opts
 
 
@@ -557,7 +535,7 @@ MODELNAMES = { 'nt': { '000000' + ''    : ['JC'      , 0 ],
                        'HIVb'     + '+F': ['HIVb'    , 19]}
                }
 
-
+PHYML = "~/.etetoolkit/ext_apps-latest/bin/phyml"
 
 if __name__ == "__main__":
-    exit(main())
+    main()

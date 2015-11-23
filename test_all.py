@@ -7,13 +7,11 @@ __title__   = "pmodeltest v%s" % __version__
 from re import sub
 import pmodeltest as pmt
 
-pmt.PHYML = '/usr/bin/phyml'
-
 def test_nt():
-    print '\n START TEST NUCLEOTIDS'
-    print ' *********************\n\n'
+    print('\n START TEST NUCLEOTIDS')
+    print(' *********************\n\n')
     errors = []
-    data  = '/home/francisco/Box/utils/pmodeltest/examples/dna.phy'
+    data  = 'examples/dna.phy'
     models = ['JC', 'K80', 'TrNef', 'TPM1', 'TPM2', 'TPM3',
               'TIM1ef', 'TIM2ef', 'TIM3ef', 'TVMef', 'SYM',
               'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
@@ -41,10 +39,10 @@ def test_nt():
                        'F81+I+F','TPM3+I','TPM1+I','K80+G','TrNef+I','K80+I+G',
                        'K80+I','F81+F','SYM','TIM2ef','TVMef','TIM3ef','TIM1ef',
                        'TPM2','TrNef','TPM3','TPM1','K80','JC+G','JC+I+G','JC+I','JC']:
-        print 'Test ordering models: ERROR'
+        print('Test ordering models: ERROR')
         errors.append('ordering models')
     else:
-        print 'Test ordering models: OK'
+        print('Test ordering models: OK')
     job_list = pmt.re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2,
                           verbose=True)
     job_list = pmt.parse_jobs(job_list, data)
@@ -55,18 +53,18 @@ def test_nt():
                                           'TPM2uf+G+F','TPM3uf+G+F','TPM3uf+I+F',
                                           'TPM3uf+I+G+F','TVM+G+F','TVM+I+G+F',
                                           'TrN+G+F','TrN+I+G+F']):
-        print 'Test better models: OK'
+        print('Test better models: OK')
     else:
-        print 'Test better models: ERROR'
+        print('Test better models: ERROR')
         errors.append('better models')
     job_list, ord_aic = pmt.aic_calc(job_list, False)
     if ord_aic == ['TPM1uf+G+F','TPM3uf+G+F','TIM1+G+F','TPM1uf+I+G+F','TIM3+G+F',
                    'HKY+G+F','TPM3uf+I+G+F','TVM+G+F','TIM1+I+G+F','TrN+G+F',
                    'TIM3+I+G+F','HKY+I+G+F','TPM2uf+G+F','GTR+G+F','TVM+I+G+F',
                    'TPM1uf+I+F','TPM3uf+I+F','TrN+I+G+F']:
-        print 'Test ordering better models: OK'
+        print('Test ordering better models: OK')
     else:
-        print 'Test ordering better models: ERROR'
+        print('Test ordering better models: ERROR')
         errors.append('ordering better models')
     
     expected = {'TrN+I+G+F'    : 6051.92212,
@@ -89,11 +87,11 @@ def test_nt():
                 'TPM1uf+I+F'   : 6051.35094}
     for j in expected:
         if not round(expected[j],2) == round(job_list[j]['AIC'],2):
-            print 'Test AIC values: ERROR'
+            print('Test AIC values: ERROR')
             errors.append('AIC values')
             break
     else:
-        print 'Test AIC values: OK'
+        print('Test AIC values: OK')
 
 
     tree = pmt.re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True) 
@@ -106,29 +104,29 @@ def test_nt():
     tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', tree)
     tree = sub('(\))[0-9]+\.[0-9]*','\\1', tree)
     if expected_tree == tree:
-        print 'Testing final topology: OK'
+        print('Testing final topology: OK')
     else:
-        print 'Testing final topology: ERROR'
+        print('Testing final topology: ERROR')
         errors.append('Different final trees')
-        print expected_tree
-        print tree
+        print(expected_tree)
+        print(tree)
 
-    print '\n\n\n TEST NUCLEOTIDES FINISHED\n\n'
+    print('\n\n\n TEST NUCLEOTIDES FINISHED\n\n')
     if errors:
-        print 'ERROR founds:'
+        print('ERROR founds:')
         for e in errors:
-            print e
+            print(e)
     else:
-        print '  -> ALL TEST OK'
+        print('  -> ALL TEST OK')
 
-    print '\n\nas last check, have a look to jmodeltest result in test folder'
+    print('\n\nas last check, have a look to jmodeltest result in test folder')
     #print ''.join([l for l in open('test/jmodeltest0.1_out.txt')])
 
 def test_aa():
-    print '\n START TEST AMINO-ACIDS'
-    print ' **********************\n\n'
+    print('\n START TEST AMINO-ACIDS')
+    print(' **********************\n\n')
     errors = []
-    data  = '/home/francisco/Box/utils/pmodeltest/examples/protein.phy'
+    data  = 'examples/protein.phy'
     models = ['LG', 'WAG', 'JTT', 'MtREV', 'Dayhoff', 'DCMut',
               'RtREV', 'CpREV', 'VT', 'Blosum62', 'MtMam',
               'MtArt', 'HIVw', 'HIVb']
@@ -157,23 +155,23 @@ def test_aa():
                        'RtREV','MtMam+I+F','VT+F','VT','CpREV','MtArt+F','HIVb+F',
                        'HIVb+G','HIVb+I+G','HIVb+I','HIVw+G+F','HIVw+I+G+F',
                        'MtMam+F','HIVw+I+F','HIVb','MtREV+G','MtREV+I+G','MtArt+G','MtArt+I+G','MtREV+I','HIVw+F','MtArt+I','MtMam+G','MtMam+I+G','MtREV','HIVw+G','HIVw+I+G','MtMam+I','HIVw+I','MtArt','HIVw','MtMam']:
-        print 'Test ordering models: ERROR'
+        print('Test ordering models: ERROR')
         errors.append('ordering models')
     else:
-        print 'Test ordering models: OK'
+        print('Test ordering models: OK')
     job_list = pmt.re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2, verbose=True)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
     if sorted(job_list.keys()) == sorted(['Dayhoff+G', 'DCMut+I+G', 'DCMut+G', 'Dayhoff+I+G']):
-        print 'Test better models: OK'
+        print('Test better models: OK')
     else:
-        print 'Test better models: ERROR'
+        print('Test better models: ERROR')
         errors.append('better models')
     job_list, ord_aic = pmt.aic_calc(job_list, False)
     if ord_aic == ['Dayhoff+G', 'DCMut+G', 'Dayhoff+I+G', 'DCMut+I+G']:
-        print 'Test ordering better models: OK'
+        print('Test ordering better models: OK')
     else:
-        print 'Test ordering better models: ERROR'
+        print('Test ordering better models: ERROR')
         errors.append('ordering better models')
 
     expected = {'DCMut+G'    : 3389.69506,
@@ -182,12 +180,12 @@ def test_aa():
                 'Dayhoff+I+G': 3390.9257}
     for j in expected:
         if not round(expected[j],2) == round(job_list[j]['AIC'],2):
-            print 'Test AIC values: ERROR'
-            print j, job_list[j]['AIC'], round(job_list[j]['AIC'],2)
+            print('Test AIC values: ERROR')
+            print(j, job_list[j]['AIC'], round(job_list[j]['AIC'],2))
             errors.append('AIC values')
             break
     else:
-        print 'Test AIC values: OK'
+        print('Test AIC values: OK')
     
     tree = pmt.re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True)
     pmt.clean_all ({ord_aic[0]: job_list[ord_aic[0]]}, data)
@@ -198,22 +196,22 @@ def test_aa():
     tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', tree)
     tree = sub('(\))[0-9]+\.[0-9]*','\\1', tree)
     if expected_tree == tree:
-        print 'Testing final topology: OK'
+        print('Testing final topology: OK')
     else:
-        print 'Testing final topology: ERROR'
+        print('Testing final topology: ERROR')
         errors.append('Different final trees')
-        print expected_tree
-        print tree
+        print(expected_tree)
+        print(tree)
 
-    print '\n\n\n TEST PROTEIN FINISHED\n\n'
+    print('\n\n\n TEST PROTEIN FINISHED\n\n')
     if errors:
-        print 'ERROR founds:'
+        print('ERROR founds:')
         for e in errors:
-            print e
+            print(e)
     else:
-        print '  -> ALL TEST OK'
+        print('  -> ALL TEST OK')
     
-    print '\n\nas last check, have a look to jmodeltest result in test folder'
+    print('\n\nas last check, have a look to jmodeltest result in test folder')
     #print ''.join([l for l in open('test/prottest3_out.txt')])
     
     
@@ -222,4 +220,4 @@ def main():
     test_aa()
             
 if __name__ == "__main__":
-    exit(main())
+    main()
