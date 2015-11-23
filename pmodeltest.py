@@ -156,8 +156,8 @@ def run_jobs(job_list, nprocs=1, refresh=2):
     '''
 
     p = Pool(int(nprocs))
-    data = p.map(launch_job, [(jname, jdata) for jname, jdata in job_list.items()])
-    for jname, out, err in data:
+    data = p.map_async(launch_job, [(jname, jdata) for jname, jdata in job_list.items()])
+    for jname, out, err in data.get():
         job_list[jname]['out'] = out
         job_list[jname]['err'] = err
     return job_list
