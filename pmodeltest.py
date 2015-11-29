@@ -393,11 +393,14 @@ def get_options():
             return self.vals.__iter__()
     choose_model = ChooseModel(model_list.values())
     parser = ArgumentParser(
-        version=__title__,
         description="""Model Test for DNA or Amino-acid alignments
         DNA models availabe are: %s.
         AA models available are: %s""" % (','.join(model_list['dna']),
                                           ','.join(model_list['aa'])))
+    
+    parser.add_argument('--version', dest='version', action="store_true",
+                        help='shows version and exit.')
+    
     parser.add_argument('-i', dest='algt', type=str, required=True,
                         help='path to input file in phylip format')
     parser.add_argument('-o', dest='outfile', type=str, 
@@ -464,7 +467,10 @@ def get_options():
                         help= '''[%(default)s] DNA/AA models.
                         e.g.: -m "JC,TrN,GTR"''')
     opts = parser.parse_args()
-    
+    if opts.version:
+        print(__title__)
+        sys.exit(0)
+        
     typ = 'aa' if opts.protein else 'dna'
     if not opts.algt:
         exit(parser.print_help())
