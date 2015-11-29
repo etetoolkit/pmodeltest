@@ -324,7 +324,7 @@ def parse_stats(path):
     '''
     dic = {}
     print(path)
-    lnl, numspe, dic = None, None, None
+    lnl, numspe = None, None
     for line in open(path, "rU"):
         if line.startswith('. Log-likelihood:'):
             lnl          = float (line.strip().split()[-1])
@@ -357,7 +357,7 @@ def parse_stats(path):
             dic['gamma shape'] = float (sub ('.*([0-9]+\.[0-9]+).*',
                                              '\\1', line.strip()))
 
-    if None in (numspe, lnl, dic):
+    if None in (numspe, lnl):
         raise ValueError("Error parsing Phyml result %s" %path)
     
     return (numspe, lnl, dic)
