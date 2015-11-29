@@ -150,6 +150,8 @@ def launch_job(job):
         sys.exit(-1)
     else:
         out, err = p.communicate()
+    out = bytes.decode(out)
+    err = bytes.decode(err)
     return (jobname, out, err)
     
 def run_jobs(job_list, nprocs=1, refresh=2):
