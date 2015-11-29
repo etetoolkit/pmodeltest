@@ -389,6 +389,8 @@ def get_options():
         def __init__(self, vals):
             self.vals = functools.reduce(lambda x, y: x+y, vals)
         def __contains__(self, val):
+            if val == 'all':
+                return True
             val = val.split(',')
             return all([True if i in self.vals else False for i in val])
         def __iter__(self):
