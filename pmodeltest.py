@@ -35,6 +35,7 @@ import sys
 from cmath import exp
 from time import sleep
 import signal
+import functools
 
 PHYML = 'phyml'
 
@@ -384,7 +385,7 @@ def get_options():
     class ChooseModel():
         'simple class to check model'
         def __init__(self, vals):
-            self.vals = reduce(lambda x, y: x+y, vals)
+            self.vals = functools.reduce(lambda x, y: x+y, vals)
         def __contains__(self, val):
             val = val.split(',')
             return all([True if i in self.vals else False for i in val])
