@@ -402,8 +402,6 @@ def get_options():
         AA models available are: %s""" % (','.join(model_list['dna']),
                                           ','.join(model_list['aa'])))
     
-    parser.add_argument('--version', dest='version', action="store_true",
-                        help='shows version and exit.')
     
     parser.add_argument('-i', dest='algt', type=str, required=True,
                         help='path to input file in phylip format')
@@ -470,11 +468,11 @@ def get_options():
                         choices=choose_model,
                         help= '''[%(default)s] DNA/AA models.
                         e.g.: -m "JC,TrN,GTR"''')
+    
+    parser.add_argument('--version', action='version', version='%(prog)s v1.4')
+    
     opts = parser.parse_args()
-    if opts.version:
-        print(__title__)
-        sys.exit(0)
-        
+    
     typ = 'aa' if opts.protein else 'dna'
     if not opts.algt:
         exit(parser.print_help())
