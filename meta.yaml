@@ -1,0 +1,21 @@
+package:
+  name: pmodeltest
+  version: "1.4"
+
+source:
+    path: ./ 
+    
+requirements:
+  build:
+    - python 
+
+  run:
+    - python
+    
+test:
+  require:
+    - python 
+    
+  commands:
+    - python $PREFIX/bin/ete3_apps/bin/pmodeltest.py --version
+ 
