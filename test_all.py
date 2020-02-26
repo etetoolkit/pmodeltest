@@ -1,5 +1,5 @@
 __author__  = "francois serra"
-__email__   = "francois@barrabin.org"
+__email__   = "serra.francois@gmail.com"
 __licence__ = "GPLv3"
 __version__ = "1.04"
 __title__   = "pmodeltest v%s" % __version__
@@ -17,11 +17,11 @@ def test_nt():
               'F81', 'HKY', 'TrN', 'TPM1uf', 'TPM2uf', 'TPM3uf',
               'TIM1', 'TIM2', 'TIM3', 'TVM', 'GTR']
     job_list = pmt.get_job_list(data, models, speed=True, protein=False,
-                            verbose=False)
-    job_list = pmt.run_jobs(job_list, nprocs=2, refresh=0.01)
+                                verbose=False)
+    job_list = pmt.run_jobs(job_list, nprocs=8)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
-    job_list, ord_aic = pmt.aic_calc(job_list, True, verbose=True)
+    job_list, ord_aic, _ = pmt.aic_calc(job_list, True, verbose=True)
     if not ord_aic == ['TPM1uf+G+F','TPM3uf+G+F','TIM1+G+F','TPM1uf+I+G+F',
                        'TIM3+G+F','HKY+G+F','TPM3uf+I+G+F','TVM+G+F',
                        'TIM1+I+G+F','TrN+G+F','TIM3+I+G+F','HKY+I+G+F',
@@ -43,7 +43,7 @@ def test_nt():
         errors.append('ordering models')
     else:
         print('Test ordering models: OK')
-    job_list = pmt.re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2,
+    job_list = pmt.re_run(job_list, data, cutoff=0.95, nprocs=2,
                           verbose=True)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
@@ -57,7 +57,7 @@ def test_nt():
     else:
         print('Test better models: ERROR')
         errors.append('better models')
-    job_list, ord_aic = pmt.aic_calc(job_list, False)
+    job_list, ord_aic, _ = pmt.aic_calc(job_list, False)
     if ord_aic == ['TPM1uf+G+F','TPM3uf+G+F','TIM1+G+F','TPM1uf+I+G+F','TIM3+G+F',
                    'HKY+G+F','TPM3uf+I+G+F','TVM+G+F','TIM1+I+G+F','TrN+G+F',
                    'TIM3+I+G+F','HKY+I+G+F','TPM2uf+G+F','GTR+G+F','TVM+I+G+F',
@@ -66,7 +66,7 @@ def test_nt():
     else:
         print('Test ordering better models: ERROR')
         errors.append('ordering better models')
-    
+
     expected = {'TrN+I+G+F'    : 6051.92212,
                 'TPM1uf+I+G+F' : 6047.98258,
                 'TVM+I+G+F'    : 6051.17612,
@@ -94,10 +94,10 @@ def test_nt():
         print('Test AIC values: OK')
 
 
-    tree = pmt.re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True) 
+    tree = pmt.re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True)
     job_list = pmt.parse_jobs({ord_aic[0]: job_list[ord_aic[0]]}, data)
     pmt.clean_all ({ord_aic[0]: job_list[ord_aic[0]]}, data)
-    
+
     expected_tree = '((((((Macaca_mulatta:0.0117313526,(Alouata_seniculus:0.0190656000,(Pongo_pygmaeus_old_3:0.0030481589,Gorilla_gorilla:0.0020294397)0.9770000000:0.0075362735)0.0000000000:0.0004306512)0.9960000000:0.0172550253,Pan_troglodytes:0.0223821735)0.8640000000:0.0093079991,Trachypithecus_johnii:0.0229373226)1.0000000000:0.0776907115,Procolobus_badius:0.1966057310)0.9970000000:0.0650031999,Trachypithecus_geii:0.0048258029)0.8290000000:0.0030733844,Semnopithecus_entellus:0.0052455542,Callithrix_jacchus:0.0081475480);\n'
     expected_tree = sub('(:[0-9]+\.[0-9]{3})[0-9]*','\\1', expected_tree)
     expected_tree = sub('(\))[0-9]+\.[0-9]*','\\1', expected_tree)
@@ -132,7 +132,7 @@ def test_aa():
               'MtArt', 'HIVw', 'HIVb']
     job_list = pmt.get_job_list(data, models, speed=True, protein=True,
                             verbose=False) # here verbose prints all command lines
-    job_list = pmt.run_jobs(job_list, nprocs=2, refresh=0.01)
+    job_list = pmt.run_jobs(job_list, nprocs=2)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
     job_list, ord_aic = pmt.aic_calc(job_list, True, verbose=True)
@@ -159,7 +159,7 @@ def test_aa():
         errors.append('ordering models')
     else:
         print('Test ordering models: OK')
-    job_list = pmt.re_run(job_list, data, cutoff=0.95, refresh=0.01, nprocs=2, verbose=True)
+    job_list = pmt.re_run(job_list, data, cutoff=0.95, nprocs=2, verbose=True)
     job_list = pmt.parse_jobs(job_list, data)
     pmt.clean_all (job_list, data)
     if sorted(job_list.keys()) == sorted(['Dayhoff+G', 'DCMut+I+G', 'DCMut+G', 'Dayhoff+I+G']):
@@ -186,7 +186,7 @@ def test_aa():
             break
     else:
         print('Test AIC values: OK')
-    
+
     tree = pmt.re_run_best(ord_aic[0], job_list[ord_aic[0]]['cmd'], data, verbose=True)
     pmt.clean_all ({ord_aic[0]: job_list[ord_aic[0]]}, data)
 
@@ -210,14 +210,14 @@ def test_aa():
             print(e)
     else:
         print('  -> ALL TEST OK')
-    
+
     print('\n\nas last check, have a look to jmodeltest result in test folder')
     #print ''.join([l for l in open('test/prottest3_out.txt')])
-    
-    
+
+
 def main():
     test_nt()
     test_aa()
-            
+
 if __name__ == "__main__":
     main()
